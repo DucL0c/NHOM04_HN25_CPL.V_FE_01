@@ -1,9 +1,20 @@
+import "./index.css"
+import AppRoutes from "./routes"
+import { Suspense } from "react"
+import { BrowserRouter } from "react-router-dom"
+import { Toaster } from "react-hot-toast"
+
 
 
 function App() {
   return (
     <>
-      <h1>Hello world</h1>
+      <Toaster position="top-right" />
+      <BrowserRouter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <AppRoutes />
+        </Suspense>
+      </BrowserRouter>
     </>
   )
 }

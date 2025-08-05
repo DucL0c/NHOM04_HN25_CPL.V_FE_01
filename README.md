@@ -4,6 +4,7 @@
 - Các công nghệ sử dụng:
     - React + Typescript
     - Tailwind
+    - Zustand 
 
 - Design: [Figma](https://www.figma.com/design/sTn6YKYVvanaidhWPLNlTC/TIKI-FULL-PAGE?node-id=1-13060&t=suTn6ojDtzOQohKT-1)
 
@@ -15,6 +16,16 @@
 
 ## Các thư viện cần thiết
 
+### Tailwind
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+### Zustand
+```bash
+npm install zustand
+```
+
 ### React Router DOM
 ```bash
 npm install react-router-dom
@@ -23,4 +34,14 @@ npm install react-router-dom
 ### React Hook Form
 ```bash
 npm install react-hook-form
+```
+
+### Axios
+```bash
+npm install axios
+```
+
+### React-Hot-Toast
+```bash
+npm install react-hot-toast
 ```
