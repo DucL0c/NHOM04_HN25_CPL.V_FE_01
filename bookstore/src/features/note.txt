@@ -1,0 +1,2 @@
+# Tính năng (Feature-based structure)
+# Ví dụ: chức năng đăng nhập
