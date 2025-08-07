@@ -8,7 +8,9 @@
 
 - Design: [Figma](https://www.figma.com/design/sTn6YKYVvanaidhWPLNlTC/TIKI-FULL-PAGE?node-id=1-13060&t=suTn6ojDtzOQohKT-1)
 
-- Backend: [Github](https://github.com/vuanhtu1993/json-server-with-auth/)
+- Backend có sẵn: [Github](https://github.com/vuanhtu1993/json-server-with-auth/)
+
+- Backend tự làm: [Github](https://github.com/DucL0c/BookStore_Api.git)
 
 - Quản lý dự án: [Trello](https://trello.com/b/U9VasFGz/nhom-4-d%E1%BB%B1-an-cu%E1%BB%91i-khoa)
 
