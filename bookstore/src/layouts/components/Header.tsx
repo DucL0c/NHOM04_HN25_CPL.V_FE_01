@@ -1,4 +1,5 @@
 import { FaSearch, FaHome, FaUser, FaShoppingCart } from "react-icons/fa";
+import { Button } from "flowbite-react";
 
 export default function Header() {
   return (
@@ -46,13 +47,15 @@ export default function Header() {
               </button>
 
               {/* User */}
-              <button className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500">
+              <Button
+                color="light"
+                className="flex items-center gap-1 hover:bg-gray-100 hover:text-blue-500"
+              >
                 <span className="w-6 h-6 rounded-full flex items-center justify-center">
                   <FaUser size={14} />
                 </span>
                 <span className="text-sm">Tài khoản</span>
-              </button>
-
+              </Button>
               {/* Cart */}
               <button className="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500">
                 <span className="w-6 h-6 rounded-full flex items-center justify-center">
