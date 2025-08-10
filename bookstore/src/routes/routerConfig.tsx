@@ -4,6 +4,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import AuthLayout from "../layouts/AuthLayout"; 
 
 const Home = lazy(() => import("../features/home"));
+const BookDetail = lazy(() => import("../features/books/BookDetail")); 
 
 export const routes = [
     {
@@ -12,6 +13,10 @@ export const routes = [
         children: [
             {
                 index: true, element: <Home />
+            },
+            {
+              path: "books/:id", // -> /books/:id
+              element: <BookDetail />,
             },
         ]
     },
