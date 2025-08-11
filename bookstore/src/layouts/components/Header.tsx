@@ -1,10 +1,11 @@
 import { MapPin, ShoppingCart, User } from "lucide-react"
+import { memo } from "react";
 
 interface HeaderProps {
   className?: string
 }
 
-export default function Header({ className = "" }: HeaderProps) {
+function Header({ className = "" }: HeaderProps) {
   return (
     <header className={`bg-white shadow-sm border-b ${className}`}>
       {/* Top banner */}
@@ -14,57 +15,58 @@ export default function Header({ className = "" }: HeaderProps) {
 
       {/* Main header */}
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <div className="bg-blue-500 text-white px-3 py-2 rounded font-bold text-xl">TIKI</div>
-            <span className="ml-2 text-sm text-gray-600">Tốt & Nhanh</span>
-          </div>
-
-          {/* Search bar */}
-          <div className="flex-1 max-w-2xl mx-8">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Freeship đơn từ 45k"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-1 rounded text-sm">
-                Tìm kiếm
-              </button>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Logo and Search bar */}
+          <div className="flex items-center w-full md:w-auto">
+            <div className="flex items-center">
+              <div className="bg-blue-500 text-white px-3 py-2 rounded font-bold text-xl">TIKI</div>
+              <span className="ml-2 text-sm text-gray-600">Tốt & Nhanh</span>
             </div>
-            <div className="flex gap-4 mt-2 text-sm text-gray-600">
-              <span>điện gia dụng</span>
-              <span>xe cộ</span>
-              <span>mẹ & bé</span>
-              <span>khỏe đẹp</span>
-              <span>nhà cửa</span>
-              <span>sách</span>
-              <span>thể thao</span>
+
+            <div className="flex-1 md:flex-1 max-w-2xl mx-auto md:mx-8 mt-2 md:mt-0">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Freeship đơn từ 45k"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                />
+                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-1 rounded text-sm">
+                  Tìm kiếm
+                </button>
+              </div>
+              <div className="hidden md:flex gap-4 mt-2 text-sm text-gray-600">
+                <span>điện gia dụng</span>
+                <span>xe cộ</span>
+                <span>mẹ & bé</span>
+                <span>khỏe đẹp</span>
+                <span>nhà cửa</span>
+                <span>sách</span>
+                <span>thể thao</span>
+              </div>
             </div>
           </div>
 
           {/* Right section */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 w-full md:w-auto justify-center md:justify-end">
             <div className="flex items-center gap-2 text-gray-600">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                 <User size={16} />
               </div>
-              <span className="text-sm">Trang chủ</span>
+              <span className="text-sm hidden lg:inline">Trang chủ</span>
             </div>
 
             <div className="flex items-center gap-2 text-gray-600">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                 <span className="text-xs font-bold">VIP</span>
               </div>
-              <span className="text-sm">Tiki VIP</span>
+              <span className="text-sm hidden lg:inline">Tiki VIP</span>
             </div>
 
             <div className="flex items-center gap-2 text-blue-600">
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <User size={16} />
               </div>
-              <span className="text-sm font-medium">Tài khoản</span>
+              <span className="text-sm font-medium hidden lg:inline">Tài khoản</span>
             </div>
 
             <div className="relative">
@@ -77,14 +79,14 @@ export default function Header({ className = "" }: HeaderProps) {
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
+        <div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-sm text-gray-600">
           <MapPin size={16} />
           <span>Giao đến:</span>
           <span className="text-gray-900">Q. Hoàn Kiếm, P. Hàng Trống, Hà Nội</span>
         </div>
 
         {/* Features bar */}
-        <div className="flex gap-6 mt-4 text-sm">
+        <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
               <span className="text-white text-xs">✓</span>
@@ -116,3 +118,5 @@ export default function Header({ className = "" }: HeaderProps) {
     </header>
   )
 }
+
+export default memo(Header);
