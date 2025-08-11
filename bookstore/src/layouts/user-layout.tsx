@@ -9,10 +9,7 @@ import {
   Shield,
   Eye,
   EyeOff,
-  Facebook,
-  MessageCircle,
   CheckCircle,
-  Trash2
 } from "lucide-react"
 
 // --- Reusable View Container ---
@@ -286,64 +283,72 @@ export default function UserProfile() {
   };
 
   const RightSidebar = () => (
-      <div className="w-full lg:w-80 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Số điện thoại và Email</h3>
-              <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-gray-500 mt-1" />
-                          <div>
-                              <span className="text-sm text-gray-600">Số điện thoại</span>
-                              <p className="text-sm text-gray-900">{phoneNumber}</p>
-                          </div>
-                      </div>
-                      <button onClick={() => setCurrentView('update_phone')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
-                  </div>
-                  <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-500 mt-1" />
-                          <div>
-                              <span className="text-sm text-gray-600">Địa chỉ email</span>
-                              <p className="text-sm text-gray-900">{email}</p>
-                          </div>
-                      </div>
-                      <button onClick={() => setCurrentView('update_email')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
-                  </div>
-              </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Bảo mật</h3>
-              <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-gray-500" /><span className="text-sm text-gray-600">Thiết lập mật khẩu</span></div>
-                      <button onClick={() => setCurrentView('update_password')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-gray-500" /><span className="text-sm text-gray-600">Cập nhật mã PIN</span></div>
-                      <button onClick={() => setCurrentView('update_pin')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Trash2 className="w-4 h-4 text-gray-500" /><span className="text-sm text-gray-600">Yêu cầu xóa tài khoản</span></div>
-                      <button className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Yêu cầu</button>
-                  </div>
-              </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Liên kết mạng xã hội</h3>
-              <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-600" /><span className="text-sm text-gray-600">Facebook</span></div>
-                      <button className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Liên kết</button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2"><MessageCircle className="w-4 h-4 text-green-600" /><span className="text-sm text-gray-600">Google</span></div>
-                      <span className="text-gray-500 text-sm border border-gray-300 rounded px-4 py-1">Đã liên kết</span>
-                  </div>
-              </div>
-          </div>
-      </div>
-  );
+    <div className="w-full lg:w-80 space-y-6">
+        <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="font-medium text-gray-900 mb-4">Số điện thoại và Email</h3>
+            <div className="space-y-4">
+                <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-gray-500 mt-1" />
+                        <div>
+                            <span className="text-sm text-gray-600">Số điện thoại</span>
+                            <p className="text-sm text-gray-900">{phoneNumber}</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setCurrentView('update_phone')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                </div>
+                <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-gray-500 mt-1" />
+                        <div>
+                            <span className="text-sm text-gray-600">Địa chỉ email</span>
+                            <p className="text-sm text-gray-900">{email}</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setCurrentView('update_email')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="font-medium text-gray-900 mb-4">Bảo mật</h3>
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/lock.png" alt="Lock icon" className="w-4 h-4" />
+                      <span className="text-sm text-gray-600">Thiết lập mật khẩu</span>
+                    </div>
+                    <button onClick={() => setCurrentView('update_password')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                </div>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img src="https://salt.tikicdn.com/ts/upload/99/50/d7/cc0504daa05199e1fb99cd9a89e60fa5.jpg" alt="PIN icon" className="w-4 h-4" />
+                      <span className="text-sm text-gray-600">Cập nhật mã PIN</span>
+                    </div>
+                    <button onClick={() => setCurrentView('update_pin')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="font-medium text-gray-900 mb-4">Liên kết mạng xã hội</h3>
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/facebook.png" alt="Facebook icon" className="w-4 h-4" />
+                      <span className="text-sm text-gray-600">Facebook</span>
+                    </div>
+                    <button className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Liên kết</button>
+                </div>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/google.png" alt="Google icon" className="w-4 h-4" />
+                      <span className="text-sm text-gray-600">Google</span>
+                    </div>
+                    <span className="text-gray-500 text-sm border border-gray-300 rounded px-4 py-1">Đã liên kết</span>
+                </div>
+            </div>
+        </div>
+    </div>
+);
   
   return (
     <main className="flex-grow max-w-7xl mx-auto px-4 py-6 w-full">
