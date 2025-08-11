@@ -5,10 +5,8 @@ import Header from './components/Header';
 
 const MainLayout = () => (
   <div className="min-h-screen bg-[#efefef]">
-    {/* <Header /> */}
     <Header />
-    {/* Main content area */}
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-[#F5F5FA]">
       <Outlet />
     </main>
     {/* <Footer /> */}
