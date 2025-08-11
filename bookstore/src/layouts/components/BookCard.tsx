@@ -17,11 +17,11 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg max-w-xs w-full">
       {/* Phần ảnh + AD */}
-      <div className="relative w-full aspect-[4/5] bg-gray-50 flex items-center justify-center">
+      <div className="relative w-full bg-gray-50 flex items-center justify-center">
         <img
           src={book.images?.at(0)?.thumbnail_url}
           alt={book.name}
-          className="max-h-full max-w-full object-contain"
+          className="max-h-full max-w-full object-cover"
         />
         <div className="absolute top-2 right-2 bg-[#F5F5FA] text-white text-[10px] font-bold px-1 py-0.5 rounded">
           <span className="text-[10px] font-bold text-[#27272A] leading-0">AD</span>

@@ -8,7 +8,7 @@ import RatingStars from "../../layouts/components/RatingStars";
 
 const Home: FC = () => {
   return (
-    <div className="container mx-auto px-4 py-4">
+    <div className="container mx-auto px-16 py-4">
       {/* <h1 className="text-3xl font-bold text-gray-800">Chào mừng đến với Bookstore!</h1>
             <p className="mt-2 mb-2 text-gray-600">Tìm kiếm và mua sách yêu thích của bạn ngay hôm nay.</p> */}
 
@@ -24,11 +24,11 @@ const Home: FC = () => {
             </div> */}
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Sidebar */}
-        <aside className="lg:col-span-2">
+        <aside className="lg:col-span-3">
           <ProductCategories />
         </aside>
         {/* Main content */}
-        <div className="lg:col-span-10 space-y-4">
+        <div className="lg:col-span-9 space-y-4">
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-black font-semibold text-3xl">Nhà Sách Tiki</h2>
           </div>
@@ -38,7 +38,7 @@ const Home: FC = () => {
           </div>
           {/* Danh mục nhỏ */}
           <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-semibold mb-3">
+            <h3 className="text-lg font-bold mb-3">
               Khám phá theo danh mục
             </h3>
             <div className="flex flex-wrap gap-16 p-3">
