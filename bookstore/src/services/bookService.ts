@@ -103,6 +103,6 @@ const mapBEToFE = (b: BEBook): FEBook => {
 };
 
 export const getBookById = async (id: string): Promise<FEBook> => {
-  const raw = await dataService.get<BEBook>(`/api/book/byId/${id}`);
+  const raw = await dataService.get<BEBook>(`/api/Book/byId/${id}`);
   return mapBEToFE(raw);
 };
