@@ -1,10 +1,4 @@
 import { type FC } from "react";
-import { Button } from "../../components/Button";
-import { Spinner } from "../../components/Spinner";
-import ToastService from "../../services/notificationService";
-
-
-
 
 const Home: FC = () => {
     return (
