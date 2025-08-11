@@ -1,21 +1,22 @@
 import axiosClient from "./axiosClient";
 
-class DataService {
-  get<T>(url: string, params?: any) {
-    return axiosClient.get<T>(url, { params });
-  }
+const dataService = {
+  async get<T = any>(url: string, params?: any): Promise<T> {
+    const res = await axiosClient.get(url, { params });
+    return res.data; // ✅ LẤY DATA
+  },
+  async post<T = any>(url: string, data?: any): Promise<T> {
+    const res = await axiosClient.post(url, data);
+    return res.data; // ✅
+  },
+  async put<T = any>(url: string, data?: any): Promise<T> {
+    const res = await axiosClient.put(url, data);
+    return res.data; // ✅
+  },
+  async delete<T = any>(url: string): Promise<T> {
+    const res = await axiosClient.delete(url);
+    return res.data; // ✅
+  },
+};
 
-  post<T>(url: string, data: any) {
-    return axiosClient.post<T>(url, data);
-  }
-
-  put<T>(url: string, data: any) {
-    return axiosClient.put<T>(url, data);
-  }
-
-  delete<T>(url: string) {
-    return axiosClient.delete<T>(url);
-  }
-}
-
-export default new DataService();
+export default dataService;

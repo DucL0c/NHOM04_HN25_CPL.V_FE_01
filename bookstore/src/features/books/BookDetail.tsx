@@ -1,8 +1,19 @@
+// src/features/books/BookDetail.tsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBookById } from "../../services/bookService";
 import ToastService from "../../services/notificationService";
-import { Star, ShoppingCart, Plus, Minus, Shield, RefreshCw, Clock, Eye, ChevronRight } from 'lucide-react';
+import {
+  Star,
+  ShoppingCart,
+  Plus,
+  Minus,
+  Shield,
+  RefreshCw,
+  Clock,
+  Eye,
+  ChevronRight,
+} from "lucide-react";
 
 interface Book {
   id: string;
@@ -26,20 +37,19 @@ interface Book {
     sku: string;
   };
   rating_average: number;
-  quantity_sold: {
-    text: string;
-    value: number;
-  };
-  categories: {
-    id: number;
-    name: string;
-  };
+  quantity_sold: { text: string; value: number };
+  categories: { id: number; name: string };
   specifications: Array<{
     name: string;
-    attributes: Array<{
-      name: string;
-      value: string;
-    }>;
+    attributes: Array<{ name: string; value: string }>;
+  }>;
+  // ✅ thêm reviews (được map ở bookService.ts)
+  reviews?: Array<{
+    id: number;
+    rating: number;
+    comment: string;
+    date: string;
+    user: { id: number; name: string; nickName?: string };
   }>;
 }
 
@@ -56,30 +66,33 @@ const BookDetail = () => {
     if (!id) return;
 
     getBookById(id)
-      .then((data) => {
-        setBook(data);
-      })
+      .then((data) => setBook(data as unknown as Book))
       .catch(() => {
         ToastService.error("Lỗi khi tải thông tin sách");
       })
       .finally(() => setLoading(false));
   }, [id]);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN').format(price);
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("vi-VN").format(price);
 
   const calculateDiscount = () => {
     if (!book) return 0;
-    return Math.round(((book.original_price - book.current_seller.price) / book.original_price) * 100);
+    return Math.round(
+      ((book.original_price - book.current_seller.price) /
+        book.original_price) *
+        100
+    );
   };
 
   const handleQuantityChange = (delta: number) => {
-    setQuantity(prev => Math.max(1, prev + delta));
+    setQuantity((prev) => Math.max(1, prev + delta));
   };
 
   const handleAddToCart = () => {
-    ToastService.success(`Đã thêm ${quantity} cuốn "${book?.name}" vào giỏ hàng`);
+    ToastService.success(
+      `Đã thêm ${quantity} cuốn "${book?.name}" vào giỏ hàng`
+    );
   };
 
   const handleBuyNow = () => {
@@ -88,10 +101,30 @@ const BookDetail = () => {
 
   // Mock data for similar products (giữ nguyên để hiển thị giao diện)
   const similarProducts = [
-    { id: 1, name: "Mục Tiêu", price: "141.980", image: "/placeholder.svg?height=120&width=90" },
-    { id: 2, name: "AI - Công Cụ Nâng Cao Hiệu Suất...", price: "110.000", image: "/placeholder.svg?height=120&width=90" },
-    { id: 3, name: "Combo 2 Cuốn Building A Second...", price: "213.400", image: "/placeholder.svg?height=120&width=90" },
-    { id: 4, name: "Chat GPT - Ứng Dụng Trí Tuệ Nhân...", price: "113.162", image: "/placeholder.svg?height=120&width=90" },
+    {
+      id: 1,
+      name: "Mục Tiêu",
+      price: "141.980",
+      image: "/placeholder.svg?height=120&width=90",
+    },
+    {
+      id: 2,
+      name: "AI - Công Cụ Nâng Cao Hiệu Suất...",
+      price: "110.000",
+      image: "/placeholder.svg?height=120&width=90",
+    },
+    {
+      id: 3,
+      name: "Combo 2 Cuốn Building A Second...",
+      price: "213.400",
+      image: "/placeholder.svg?height=120&width=90",
+    },
+    {
+      id: 4,
+      name: "Chat GPT - Ứng Dụng Trí Tuệ Nhân...",
+      price: "113.162",
+      image: "/placeholder.svg?height=120&width=90",
+    },
   ];
 
   if (loading) {
@@ -139,17 +172,19 @@ const BookDetail = () => {
         {/* Main Product Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Column 1: Product Images */}
-          {/* Lớp lg:sticky và lg:top-4 chỉ hoạt động trên màn hình lớn */}
           <div className="lg:col-span-3 lg:sticky lg:top-[30px] self-start">
             <div className="bg-white rounded-lg p-4 mb-4">
               <div className="mb-4">
                 <img
-                  src={book.images[selectedImageIndex]?.large_url || "/placeholder.svg?height=400&width=300"}
+                  src={
+                    book.images[selectedImageIndex]?.large_url ||
+                    "/placeholder.svg?height=400&width=300"
+                  }
                   alt={book.name}
                   className="w-full rounded-lg"
                 />
               </div>
-              
+
               {/* Thumbnail Images */}
               <div className="flex gap-2">
                 {book.images.slice(0, 2).map((image, index) => (
@@ -157,7 +192,9 @@ const BookDetail = () => {
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
                     className={`w-12 h-16 rounded overflow-hidden border ${
-                      selectedImageIndex === index ? 'border-blue-500' : 'border-gray-200'
+                      selectedImageIndex === index
+                        ? "border-blue-500"
+                        : "border-gray-200"
                     }`}
                   >
                     <img
@@ -181,15 +218,18 @@ const BookDetail = () => {
           </div>
 
           {/* Column 3: Purchase Section */}
-          {/* Lớp lg:sticky và lg:top-4 chỉ hoạt động trên màn hình lớn */}
           <div className="lg:col-span-3 lg:sticky lg:top-[30px] order-2 lg:order-3 self-start">
             <div className="bg-white rounded-lg p-6 shadow-sm">
               {/* Seller Info */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-600 font-bold text-lg">Tiki</span>
-                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">OFFICIAL</span>
+                    <span className="text-blue-600 font-bold text-lg">
+                      Tiki
+                    </span>
+                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
+                      OFFICIAL
+                    </span>
                   </div>
                 </div>
               </div>
@@ -210,7 +250,9 @@ const BookDetail = () => {
                   <input
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) =>
+                      setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                    }
                     className="w-8 text-center py-1 border-0 focus:ring-0 focus:outline-none text-sm"
                     min="1"
                   />
@@ -253,31 +295,30 @@ const BookDetail = () => {
             </div>
           </div>
 
-          {/* Column 2: Main Info, Description, Similar, Top Deals, Guarantees */}
+          {/* Column 2: Main Info, Description, Similar, Top Deals, Guarantees, Reviews */}
           <div className="lg:col-span-6 order-3 lg:order-2">
             {/* Block 1: Tên sách, Tác giả, Rating, Giá */}
             <div className="bg-white rounded-lg p-6 mb-4">
-              {/* Authors */}
               <div className="text-sm text-blue-600 mb-2">
-                Tác giả: {book.authors.map(author => author.name).join(", ")}
+                Tác giả: {book.authors.map((author) => author.name).join(", ")}
               </div>
 
-              {/* Title */}
               <h1 className="text-xl font-bold text-gray-900 mb-3">
                 {book.name}
               </h1>
 
-              {/* Rating */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-sm font-medium">{book.rating_average}</span>
+                <span className="text-sm font-medium">
+                  {book.rating_average}
+                </span>
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
                         i < Math.floor(book.rating_average)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
                       }`}
                     />
                   ))}
@@ -287,7 +328,6 @@ const BookDetail = () => {
                 </span>
               </div>
 
-              {/* Price */}
               <div className="mb-0">
                 <div className="flex items-center gap-3 mb-1">
                   <span className="text-2xl font-bold text-red-600">
@@ -307,7 +347,7 @@ const BookDetail = () => {
               </div>
             </div>
 
-            {/* Block 2: Thông tin chi tiết (Specifications) */}
+            {/* Block 2: Thông tin chi tiết (Specifications - giữ nguyên fix cứng) */}
             <div className="bg-white rounded-lg p-6 mb-4">
               <h3 className="font-medium text-gray-900 mb-3">Thông tin chi tiết</h3>
               <div className="space-y-2 text-sm">
@@ -346,11 +386,15 @@ const BookDetail = () => {
               </div>
             </div>
 
-            {/* Block 3: Mô tả sản phẩm (Product Description) */}
+            {/* Block 3: Mô tả sản phẩm */}
             <div className="bg-white rounded-lg p-6 mb-4">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Mô tả sản phẩm</h2>
-              <div 
-                className={`prose prose-sm max-w-none text-gray-700 ${showFullDescription ? '' : 'line-clamp-6'}`}
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                Mô tả sản phẩm
+              </h2>
+              <div
+                className={`prose prose-sm max-w-none text-gray-700 ${
+                  showFullDescription ? "" : "line-clamp-6"
+                }`}
                 dangerouslySetInnerHTML={{ __html: book.description }}
               />
               {book.description.length > 500 && (
@@ -359,15 +403,17 @@ const BookDetail = () => {
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="text-blue-600 hover:text-blue-800 text-sm"
                   >
-                    {showFullDescription ? 'Thu gọn' : 'Xem thêm'}
+                    {showFullDescription ? "Thu gọn" : "Xem thêm"}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Block 4: Sản phẩm tương tự (Similar Products) */}
+            {/* Block 4: Sản phẩm tương tự */}
             <div className="bg-white rounded-lg p-6 mb-4">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Sản phẩm tương tự</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                Sản phẩm tương tự
+              </h2>
               <div className="grid grid-cols-4 gap-4">
                 {similarProducts.map((product) => (
                   <div key={product.id} className="text-center">
@@ -378,10 +424,15 @@ const BookDetail = () => {
                         className="w-full h-32 object-cover rounded"
                       />
                     </div>
-                    <h3 className="text-xs font-medium mb-1 line-clamp-2">{product.name}</h3>
+                    <h3 className="text-xs font-medium mb-1 line-clamp-2">
+                      {product.name}
+                    </h3>
                     <div className="flex justify-center">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <Star
+                          key={i}
+                          className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                        />
                       ))}
                     </div>
                     <div className="text-sm font-bold text-red-600 mt-1">
@@ -405,10 +456,15 @@ const BookDetail = () => {
                         className="w-full h-32 object-cover rounded"
                       />
                     </div>
-                    <h3 className="text-xs font-medium mb-1 line-clamp-2">{product.name}</h3>
+                    <h3 className="text-xs font-medium mb-1 line-clamp-2">
+                      {product.name}
+                    </h3>
                     <div className="flex justify-center">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <Star
+                          key={i}
+                          className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                        />
                       ))}
                     </div>
                     <div className="text-sm font-bold text-red-600 mt-1">
@@ -419,10 +475,12 @@ const BookDetail = () => {
               </div>
             </div>
 
-            {/* Block 6: An tâm mua sắm (Purchase Guarantees) */}
-            <div className="bg-white rounded-lg p-6">
+            {/* Block 6: An tâm mua sắm */}
+            <div className="bg-white rounded-lg p-6 mb-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900">An tâm mua sắm</h2>
+                <h2 className="text-lg font-bold text-gray-900">
+                  An tâm mua sắm
+                </h2>
                 <ChevronRight className="w-5 h-5 text-blue-600" />
               </div>
               <div className="mt-4 space-y-3 text-sm">
@@ -440,6 +498,86 @@ const BookDetail = () => {
                 </div>
               </div>
             </div>
+
+            {/* ✅ Block 7: ĐÁNH GIÁ SẢN PHẨM (cuối cùng) */}
+            <div className="bg-white rounded-lg p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                Đánh giá sản phẩm
+              </h2>
+
+              {/* Tóm tắt */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="text-3xl font-extrabold text-yellow-500">
+                  {book.rating_average.toFixed(1)}
+                </div>
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < Math.round(book.rating_average)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="text-sm text-gray-500">
+                  • {book.reviews?.length ?? 0} đánh giá
+                </div>
+              </div>
+
+              {/* Danh sách đánh giá */}
+              {book.reviews && book.reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {book.reviews.map((rv) => (
+                    <div
+                      key={rv.id}
+                      className="border-t pt-6 first:border-t-0 first:pt-0"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700">
+                          {getInitials(rv.user.name)}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <div className="font-medium text-gray-900">
+                              {rv.user.name}
+                            </div>
+                            {rv.user.nickName && (
+                              <div className="text-xs text-gray-500">
+                                ({rv.user.nickName})
+                              </div>
+                            )}
+                            <div className="text-xs text-gray-400">
+                              · {formatDate(rv.date)}
+                            </div>
+                          </div>
+                          <div className="mt-1 flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                  i < rv.rating
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <div className="mt-2 text-sm text-gray-800 whitespace-pre-line">
+                            {rv.comment}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Chưa có đánh giá nào.</p>
+              )}
+            </div>
+            {/* END reviews */}
           </div>
         </div>
       </div>
@@ -448,3 +586,19 @@ const BookDetail = () => {
 };
 
 export default BookDetail;
+
+// Helpers
+function formatDate(s: string) {
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? s : d.toLocaleString("vi-VN");
+}
+function getInitials(name: string) {
+  if (!name) return "U";
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
