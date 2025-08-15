@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import MainLayout from "../layouts/MainLayout";
 import UserProfile from "../layouts/user-layout";
+import Checkout from "../features/order/Checkout";
+import Confirm from "../features/order/Comfirm";
 
 const Home = lazy(() => import("../features/home"));
 const BookDetail = lazy(() => import("../features/books/BookDetail"));
@@ -21,7 +23,15 @@ export const routes = [
       {
         path: "userprofile",
         element: <UserProfile />,
-      }
+      },
+      { 
+        path: "/checkout", 
+        element: <Checkout /> 
+      },
+      {
+        path: "/confirm",
+        element: <Confirm />,
+      },
     ],
   },
 ];
