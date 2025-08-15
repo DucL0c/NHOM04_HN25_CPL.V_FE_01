@@ -1,9 +1,25 @@
 import { create } from 'zustand';
-import type { AuthState } from './types/auth.types';
+import type { AuthState, User } from './types/auth.types';
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  login: (user) => set({ user, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
-}));
+const getInitialUser = (): User | null => {
+  const stored = localStorage.getItem('user');
+  return stored ? JSON.parse(stored) : null;
+};
+
+export const useAuthStore = create<AuthState>((set) => {
+  const user = getInitialUser();
+  return {
+    user,
+    isAuthenticated: !!user,
+    login: (user) => {
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('accessToken', user.token);
+      set({ user, isAuthenticated: true });
+    },
+    logout: () => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
+      set({ user: null, isAuthenticated: false });
+    },
+  };
+});
