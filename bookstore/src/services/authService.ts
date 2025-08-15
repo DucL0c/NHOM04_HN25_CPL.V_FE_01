@@ -1,18 +1,27 @@
-import dataService from './dataService';
+import dataService from "./dataService";
+import type { User } from "../store/types/auth.types"; // Đảm bảo bạn có User type
 
-// Service cho các API xác thực: đăng nhập, đăng ký, quên mật khẩu, đổi mật khẩu
 const authService = {
-  login: (data: { email: string; password: string }) =>
-    dataService.post<{ accessToken: string }>('/login', data),
+  login: (data: { Email: string; Password: string }) =>
+    dataService.post<{ accessToken: string; user: User }>(
+      "/api/Auth/login",
+      data
+    ),
 
-  register: (data: { name: string; email: string; password: string }) =>
-    dataService.post<{ accessToken: string }>('/register', data),
+  register: (data: {
+    Email: string;
+    PasswordHash: string;
+    ConfirmPassword: string;
+  }) =>
+    dataService.post<{ accessToken: string; user: User }>(
+      "/api/Auth/register",
+      data
+    ),
 
-  forgotPassword: (email: string) =>
-    dataService.post<{ message: string }>('/forgot-password', { email }),
-
-  resetPassword: (data: { token: string; newPassword: string }) =>
-    dataService.post<{ message: string }>('/reset-password', data),
+  forgotPassword: (Email: string) =>
+    dataService.post<{ message: string }>("/api/Auth/forgot-password", {
+      Email,
+    }),
 };
 
 export default authService;
