@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Book } from "../../store/types/book.types";
-import dataService from "../../services/dataService";
+import DataService from "../../services/axiosClient";
+
 
 const BestSellingProducts = () => {
   const [products, setProducts] = useState<Book[]>([]);
@@ -8,12 +9,14 @@ const BestSellingProducts = () => {
   useEffect(() => {
     // Fetch or update products here
     const fetchProducts = async () => {
-      const data = await dataService.get<Book[]>("/books", {
-        _sort: "quantity_sold.value",
-        _order: "desc",
-        _limit: 10,
+      const res = await DataService.get<Book[]>("/books", {
+        params: {
+          _sort: "quantity_sold.value",
+          _order: "desc",
+          _limit: 10,
+        },
       });
-      setProducts(data);
+      setProducts(res.data);
     };
     fetchProducts();
   }, []);

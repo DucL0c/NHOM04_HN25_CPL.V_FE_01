@@ -1,10 +1,10 @@
 import type { FC } from "react";
 import { useState } from "react";
-import RatingStars from "../layouts/components/RatingStars";
+import RatingStars from "./RatingStars";
 import type {
   BookListFilter,
   BookListSort,
-} from "../layouts/components/BookList";
+} from "./BookList";
 
 const BookFilterSort: FC<{
   onChange?: (filter: BookListFilter, sort: BookListSort) => void;

@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import Footer from './components/Footer';
-import Header from './components/Header';
+import Footer from './Footer';
+import Header from './Header';
 
 
 const MainLayout = () => (
@@ -9,7 +9,6 @@ const MainLayout = () => (
     <main className="min-h-screen bg-[#F5F5FA]">
       <Outlet />
     </main>
-    {/* <Footer /> */}
     <Footer />
   </div>
 );

@@ -1,10 +1,10 @@
-import dataService from "./dataService";
 import type { User } from "../store/types/auth.types"; // Đảm bảo bạn có User type
+import DataService from "../services/axiosClient";
 
 const authService = {
   login: (data: { Email: string; Password: string }) =>
-    dataService.post<{ accessToken: string; user: User }>(
-      "/api/Auth/login",
+    DataService.post<{ accessToken: string; user: User }>(
+      "/Auth/login",
       data
     ),
 
@@ -13,13 +13,13 @@ const authService = {
     PasswordHash: string;
     ConfirmPassword: string;
   }) =>
-    dataService.post<{ accessToken: string; user: User }>(
-      "/api/Auth/register",
+    DataService.post<{ accessToken: string; user: User }>(
+      "/Auth/register",
       data
     ),
 
   forgotPassword: (Email: string) =>
-    dataService.post<{ message: string }>("/api/Auth/forgot-password", {
+    DataService.post<{ message: string }>("/Auth/forgot-password", {
       Email,
     }),
 };

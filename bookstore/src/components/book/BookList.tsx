@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BookCard from "./BookCard";
-import Pagination from "./Pagination";
-import dataService from "../../services/dataService";
+import Pagination from "../pagination/Pagination";
+import DataService from "../../services/axiosClient";
 import type { Book } from "../../store/types/book.types";
 
 
@@ -41,12 +41,12 @@ const BookList: React.FC<BookListProps> = ({ filter, sort }) => {
         }
 
         // Lấy tổng số sách để tính tổng số trang
-        const totalRes = await dataService.get<Book[]>("/books", { rating_average_gte: filter?.minRating });
+        const totalRes = await DataService.get<Book[]>("/books", { params: { rating_average_gte: filter?.minRating } });
         const total = Array.isArray(totalRes) ? totalRes.length : 0;
         setTotalPages(Math.max(1, Math.ceil(total / LIMIT)));
 
         // Lấy sách cho trang hiện tại
-        const response = await dataService.get<Book[]>("/books", params);
+        const response = await DataService.get<Book[]>("/books", { params });
         if (Array.isArray(response)) {
           setBooks(response);
         } else {

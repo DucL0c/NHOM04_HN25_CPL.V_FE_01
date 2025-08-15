@@ -1,13 +1,10 @@
 import { type FC, useState } from "react";
-// import { Button } from "../../components/Button";
-// import { Spinner } from "../../components/Spinner";
-// import ToastService from "../../services/notificationService";
-import BookList from "../../layouts/components/BookList";
-import ProductCategories from "../../layouts/components/ProductCategories";
-import Banner from "../../layouts/components/Banner";
-import BookFilterSort from "../../components/BookFilterSort";
-import type { BookListFilter, BookListSort } from "../../layouts/components/BookList";
-import BestSellingProducts from "../../layouts/components/BestSellingProducts";
+import BookList from "../../components/book/BookList";
+import ProductCategories from "../../components/book/ProductCategories";
+import Banner from "../../components/banner/Banner";
+import BookFilterSort from "../../components/book/BookFilterSort";
+import type { BookListFilter, BookListSort } from "../../components/book/BookList";
+import BestSellingProducts from "../../components/book/BestSellingProducts";
 
 const Home: FC = () => {
   const [filter, setFilter] = useState<BookListFilter>({});

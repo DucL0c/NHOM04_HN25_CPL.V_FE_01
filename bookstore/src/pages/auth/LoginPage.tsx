@@ -48,7 +48,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       } else {
         console.log("[LOGIN] response:", response);
       }
-      const { accessToken, user } = response || {};
+      const { accessToken, user } = response?.data || {};
       if (!accessToken || !user) {
         throw new Error("Thiếu accessToken hoặc user trong response");
       }

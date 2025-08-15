@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@floating-ui/react": "^0.27.15",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@floating-ui/react": "^0.27.15",
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
     "@fortawesome/free-regular-svg-icons": "^7.0.0",
@@ -22,7 +22,6 @@
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
     "flowbite": "^3.1.2",
-    "flowbite-react": "^0.12.7",
     "jwt-decode": "^4.0.0",
     "lucide": "^0.539.0",
     "lucide-react": "^0.539.0",

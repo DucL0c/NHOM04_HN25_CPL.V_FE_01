@@ -1,16 +1,15 @@
 import { FaHome, FaUser, FaShoppingCart } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/auth.store";
-import LoginPage from "../../features/auth/LoginPage";
-import Popup from "../../components/Popup"; // đường dẫn theo nơi bạn đặt file
+import { useAuthStore } from "../store/auth.store";
+import LoginPage from "../pages/auth/LoginPage";
+import Popup from "../components/popup/Popup"; 
 
 const Header = () => {
   const [openLogin, setOpenLogin] = useState(false);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  // ref của nút "Tài khoản" để đặt vị trí popup
   const accountBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {

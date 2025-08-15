@@ -1,8 +1,7 @@
-// src/features/books/BookDetail.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBookById } from "../../services/bookService";
-import dataService from "../../services/dataService";
+import DataService from "../../services/axiosClient";
 import ToastService from "../../services/notificationService";
 import {
   Star,
@@ -16,7 +15,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-/** ===== FE types (đồng bộ với map ở bookService) ===== */
 interface FEReviewUser {
   id: number;
   name: string;
@@ -79,9 +77,9 @@ type BEBook = {
   name: string;
   description: string;
   shortDescription: string;
-  ratingAverage: number | null;
-  originalPrice: number | null;
-  listPrice: number | null;
+  ratingAverage: number;
+  originalPrice: number;
+  listPrice: number;
   quantitySold?: { value: number; text: string };
   bookAuthors?: Array<{ author: { authorId: number; name: string; slug?: string | null } }>;
   bookImages?: Array<{
@@ -199,18 +197,16 @@ const BookDetail = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Load toàn bộ sách (Top Deals + Similar)
+
   useEffect(() => {
     const fetchAllBooks = async () => {
       setLoadingLists(true);
       try {
-        const raw = await dataService.get<BEBook[]>("/api/Book/getall");
+        const raw = await DataService.get<BEBook[], any>("/Book/getall");
         const mapped = (raw ?? []).map(mapBEToFE);
+        console.log("[BookDetail] Loaded all books:", mapped);
         setAllBooks(mapped);
-        // console.warn("[BookDetail] Loaded list:", mapped.length);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
-        // console.warn("[BookDetail] Failed to load /api/Book/getall:", e);
         setAllBooks([]);
       } finally {
         setLoadingLists(false);
