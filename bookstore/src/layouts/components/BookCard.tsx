@@ -15,7 +15,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
       : 0;
 
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg max-w-xs w-full">
+    <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg max-w-xs w-full cursor-pointer">
       {/* Phần ảnh + AD */}
       <div className="relative w-full bg-gray-50 flex items-center justify-center">
         <img
@@ -36,31 +36,31 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <span className="text-[#FF424E] text-lg font-semibold">
               {book.current_seller?.price?.toLocaleString()}
             </span>
-            <span className="text-[#FF424E] text-[13px] font-semibold align-super">
+            <span className="text-[#FF424E] text-[13.5px] font-semibold align-super">
               ₫
             </span>
           </div>
           {discountPercent > 0 && (
-            <span className="bg-[#F5F5FA] text-[#27272A] text-xs font-medium rounded px-1">
+            <span className="bg-[#F5F5FA] text-[#27272A] text-sm font-medium rounded px-1">
               -{discountPercent}%
             </span>
           )}
         </div>
 
         {/* Tác giả */}
-        <div className="text-[#808089] text-xs mt-1">
+        <div className="text-[#808089] text-sm mt-1">
           {book.authors
             ?.map((author) => author.name.toUpperCase())
             .join(", ") || null}
         </div>
 
         {/* Tiêu đề sách */}
-        <div className="font-normal text-sm text-[#27272A] leading-5 line-clamp-2">
+        <div className="font-normal text-base text-[#27272A] leading-5 line-clamp-3">
           {book.name}
         </div>
 
         {/* Đánh giá + Đã bán */}
-        <div className="flex items-center gap-1 text-[#808089] text-xs mt-1">
+        <div className="flex items-center gap-2 text-[#808089] text-sm mt-1">
           {book.rating_average ? (
             <RatingStars rating={book.rating_average} />
           ) : null}
@@ -71,7 +71,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
         {/* Ngày giao hàng */}
         <div className="absolute w-[252px] bottom-1 border-t border-[#EBEBF0]">
-          <p className="text-[#808089] text-xs m-1">Giao thứ 3, 01/04</p>
+          <p className="text-[#808089] text-sm m-1">Giao thứ 3, 01/04</p>
         </div>
       </div>
     </div>
