@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout";
 import UserProfile from "../pages/profile/Profile";
 import Checkout from "../pages/order/Checkout";
 import Confirm from "../pages/order/Comfirm";
+import OrderDetail from "../features/books/orderdetail";
 
 const Home = lazy(() => import("../pages/home"));
 const BookDetail = lazy(() => import("../pages/books/BookDetail"));
@@ -32,6 +33,10 @@ export const routes = [
         path: "/confirm",
         element: <Confirm />,
       },
+      {
+        path: "/orders",
+        element: <OrderDetail />,
+      }
     ],
   },
 ];
