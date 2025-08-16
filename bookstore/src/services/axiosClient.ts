@@ -1,10 +1,30 @@
-// src/services/axiosClient.ts
 import axios from "axios";
+import { authStore } from "../auth/auth.store";
 
 const axiosClient = axios.create({
-  baseURL: (import.meta as any).env?.VITE_API_BASE_URL || "http://localhost:7061",
-  headers: { "Content-Type": "application/json" },
-  withCredentials: false,
+  baseURL: import.meta.env.API_BASE_URL || "https://localhost:7061/api/",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+axiosClient.interceptors.request.use((config) => {
+  const token = authStore.getState().accessToken;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axiosClient.interceptors.response.use(
+  (response) => response.data,
+  (err) => {
+    if (err.response?.status === 401) {
+      authStore.getState().clearAuth();
+      window.location.href = "/";
+    }
+    return Promise.reject(err);
+  }
+);
 
 export default axiosClient;

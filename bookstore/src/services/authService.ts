@@ -1,18 +1,27 @@
-import dataService from './dataService';
+import type { User } from "../store/types/auth.types"; // Đảm bảo bạn có User type
+import DataService from "../services/axiosClient";
 
-// Service cho các API xác thực: đăng nhập, đăng ký, quên mật khẩu, đổi mật khẩu
 const authService = {
-  login: (data: { email: string; password: string }) =>
-    dataService.post<{ accessToken: string }>('/login', data),
+  login: (data: { Email: string; Password: string }) =>
+    DataService.post<{ accessToken: string; user: User }>(
+      "/Auth/login",
+      data
+    ),
 
-  register: (data: { name: string; email: string; password: string }) =>
-    dataService.post<{ accessToken: string }>('/register', data),
+  register: (data: {
+    Email: string;
+    PasswordHash: string;
+    ConfirmPassword: string;
+  }) =>
+    DataService.post<{ accessToken: string; user: User }>(
+      "/Auth/register",
+      data
+    ),
 
-  forgotPassword: (email: string) =>
-    dataService.post<{ message: string }>('/forgot-password', { email }),
-
-  resetPassword: (data: { token: string; newPassword: string }) =>
-    dataService.post<{ message: string }>('/reset-password', data),
+  forgotPassword: (Email: string) =>
+    DataService.post<{ message: string }>("/Auth/forgot-password", {
+      Email,
+    }),
 };
 
 export default authService;

@@ -1,9 +1,12 @@
 import { lazy } from "react";
 import MainLayout from "../layouts/MainLayout";
-import UserProfile from "../layouts/user-layout";
+import UserProfile from "../pages/profile/Profile";
+import Checkout from "../pages/order/Checkout";
+import Confirm from "../pages/order/Comfirm";
+import Cart from "../pages/cart/Cart";
 
-const Home = lazy(() => import("../features/home"));
-const BookDetail = lazy(() => import("../features/books/BookDetail"));
+const Home = lazy(() => import("../pages/home"));
+const BookDetail = lazy(() => import("../pages/books/BookDetail"));
 
 export const routes = [
   {
@@ -21,6 +24,18 @@ export const routes = [
       {
         path: "userprofile",
         element: <UserProfile />,
+      },
+      { 
+        path: "/checkout", 
+        element: <Checkout /> 
+      },
+      {
+        path: "/confirm",
+        element: <Confirm />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       }
     ],
   },
