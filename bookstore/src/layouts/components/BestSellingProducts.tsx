@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
-import type { Book } from "../../store/types/book.types";
+//import type { Book } from "../../store/types/book.types";
 import dataService from "../../services/dataService";
 
+interface Books {
+  bookId: string;
+  name: string;
+  bookSellers: {
+    id: number;
+    price: number;
+  }[];
+}
+
 const BestSellingProducts = () => {
-  const [products, setProducts] = useState<Book[]>([]);
+  const [products, setProducts] = useState<Books[]>([]);
 
   useEffect(() => {
     // Fetch or update products here
     const fetchProducts = async () => {
-      const data = await dataService.get<Book[]>("/books", {
-        _sort: "quantity_sold.value",
-        _order: "desc",
-        _limit: 10,
+      const res = await dataService.get<any>("/api/Book/getallbypaging", {
+        page: 0,
+        pageSize: 10,
+        sortBy: 1,
       });
-      setProducts(data);
+      setProducts(res.items);
     };
     fetchProducts();
   }, []);
@@ -31,11 +40,11 @@ const BestSellingProducts = () => {
           >
             <div className="flex items-start gap-2">
               <span className="text-gray-600">{index + 1}.</span>
-              {product.id ? (
+              {product.bookId ? (
                 <a
-                  href="#"
+                  href={`books/${product.bookId}`}
                   className="text-blue-700 hover:underline"
-                  target="_blank"
+                  // target="_blank"
                   rel="noopener noreferrer"
                 >
                   {product.name}
@@ -46,7 +55,7 @@ const BestSellingProducts = () => {
             </div>
             <div>
               <span className="text-black text-sm">
-                {product.current_seller?.price?.toLocaleString()}
+                {product.bookSellers?.[0]?.price?.toLocaleString()}
               </span>
               <span className="text-black text-sm align-super">
                 ₫
