@@ -1,6 +1,6 @@
 import DataService from "../services/axiosClient";
 
-type BEBook = {
+export type BEBook = {
   bookId: number;
   name: string;
   description: string;

@@ -18,11 +18,10 @@ const Header = () => {
   useEffect(() => {
     if (user) {
       setOpenLogin(false);
-      setOpenDropdown(false); // Close dropdown when user logs in
+      setOpenDropdown(false); 
     }
   }, [user]);
 
-  // Handle clicks outside dropdown and popup
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       // Close dropdown if clicked outside
@@ -34,7 +33,6 @@ const Header = () => {
         setOpenDropdown(false);
       }
 
-      // Close popup if clicked outside
       if (
         openLogin &&
         popupRef.current &&
@@ -164,7 +162,7 @@ const Header = () => {
               </Popup>
 
               {/* Cart */}
-              <button className="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500">
+              <button onClick={() => navigate("/cart")} className="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500">
                 <FaShoppingCart size={14} />
                 <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
                   0

@@ -10,7 +10,7 @@ const BookFilterSort: FC<{
   onChange?: (filter: BookListFilter, sort: BookListSort) => void;
 }> = ({ onChange }) => {
   const [filter, setFilter] = useState<BookListFilter>({});
-  const [sort, setSort] = useState<BookListSort>("popular");
+  const [sort, setSort] = useState<BookListSort>(0);
 
   const handleCheckbox =
     (key: keyof BookListFilter) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,9 +27,9 @@ const BookFilterSort: FC<{
   };
 
   const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    let value: BookListSort = "popular";
-    if (e.target.value === "Giá thấp → cao") value = "priceAsc";
-    if (e.target.value === "Giá cao → thấp") value = "priceDesc";
+    let value: BookListSort = 0;
+    if (e.target.value === "Giá thấp → cao") value = 3;
+    if (e.target.value === "Giá cao → thấp") value = 4;
     setSort(value);
     onChange?.(filter, value);
   };
@@ -97,9 +97,9 @@ const BookFilterSort: FC<{
         <select
           className="border rounded-full px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-200"
           value={
-            sort === "popular"
+            sort === 0
               ? "Phổ biến"
-              : sort === "priceAsc"
+              : sort === 3
               ? "Giá thấp → cao"
               : "Giá cao → thấp"
           }

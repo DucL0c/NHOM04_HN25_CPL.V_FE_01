@@ -1,22 +1,42 @@
 import { useEffect, useState } from "react";
-import type { Book } from "../../store/types/book.types";
-import DataService from "../../services/axiosClient";
+//import type { Book } from "../../store/types/book.types";
+import axiosClient from "../../services/axiosClient";
 
+interface Books {
+  page: number;
+  count: number;
+  totalPages: number;
+  totalCount: number;
+  maxPage: number;
+  items: [
+    {
+      bookId: string;
+      name: string;
+      bookSellers: [
+        {
+          id: number;
+          price: number;
+        }
+      ]
+    }
+  ]
+}
 
 const BestSellingProducts = () => {
-  const [products, setProducts] = useState<Book[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch or update products here
     const fetchProducts = async () => {
-      const res = await DataService.get<Book[]>("/books", {
+      const res = await axiosClient.get<Books, any>("/Book/getallbypaging", {
         params: {
-          _sort: "quantity_sold.value",
-          _order: "desc",
-          _limit: 10,
+          page: 0,
+          pageSize: 10,
+          sortBy: 1,
         },
       });
-      setProducts(res.data);
+      const items = res.items;
+      setProducts(items);
     };
     fetchProducts();
   }, []);
@@ -34,11 +54,11 @@ const BestSellingProducts = () => {
           >
             <div className="flex items-start gap-2">
               <span className="text-gray-600">{index + 1}.</span>
-              {product.id ? (
+              {product.bookId ? (
                 <a
-                  href="#"
+                  href={`books/${product.bookId}`}
                   className="text-blue-700 hover:underline"
-                  target="_blank"
+                  // target="_blank"
                   rel="noopener noreferrer"
                 >
                   {product.name}
@@ -49,7 +69,7 @@ const BestSellingProducts = () => {
             </div>
             <div>
               <span className="text-black text-sm">
-                {product.current_seller?.price?.toLocaleString()}
+                {product.bookSellers?.[0]?.price?.toLocaleString()}
               </span>
               <span className="text-black text-sm align-super">
                 ₫

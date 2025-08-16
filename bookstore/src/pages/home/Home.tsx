@@ -8,7 +8,7 @@ import BestSellingProducts from "../../components/book/BestSellingProducts";
 
 const Home: FC = () => {
   const [filter, setFilter] = useState<BookListFilter>({});
-  const [sort, setSort] = useState<BookListSort>("popular");
+  const [sort, setSort] = useState<BookListSort>(0);
   return (
     <div className="container mx-auto px-8 py-4">
       {/* <h1 className="text-3xl font-bold text-gray-800">Chào mừng đến với Bookstore!</h1>
@@ -69,7 +69,7 @@ const Home: FC = () => {
           </div>
           <BookFilterSort onChange={(f, s) => { setFilter(f); setSort(s); }} />
           {/* BookList component will be rendered here */}
-          <BookList filter={filter} sort={sort} />
+          <BookList filter={filter} sortBy={sort} />
         </div>
       </main>
       <BestSellingProducts />

@@ -14,14 +14,14 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   if (totalPages <= 1) return null;
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const pages = Array.from({ length: totalPages }, (_, i) => i);
 
   return (
     <div className="flex justify-center items-center gap-2 py-4">
       {/* Nút Previous */}
       <button
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-blue-500 hover:text-white transition disabled:opacity-50 disabled:hover:bg-gray-100"
-        disabled={currentPage === 1}
+        className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer bg-gray-100 hover:bg-blue-500 hover:text-white transition disabled:opacity-50 disabled:hover:bg-gray-100"
+        disabled={currentPage === 0}
         onClick={() => onPageChange(currentPage - 1)}
       >
         <FaChevronLeft size={14} />
@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {pages.map((page) => (
         <button
           key={page}
-          className={`flex items-center justify-center w-10 h-10 rounded-full transition 
+          className={`flex items-center justify-center w-10 h-10 rounded-full transition cursor-pointer
             ${
               page === currentPage
                 ? "bg-blue-500 text-white shadow-md"
@@ -39,14 +39,14 @@ const Pagination: React.FC<PaginationProps> = ({
             }`}
           onClick={() => onPageChange(page)}
         >
-          {page}
+          {page + 1}
         </button>
       ))}
 
       {/* Nút Next */}
       <button
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-blue-500 hover:text-white transition disabled:opacity-50 disabled:hover:bg-gray-100"
-        disabled={currentPage === totalPages}
+        className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer bg-gray-100 hover:bg-blue-500 hover:text-white transition disabled:opacity-50 disabled:hover:bg-gray-100"
+        disabled={currentPage === totalPages - 1}
         onClick={() => onPageChange(currentPage + 1)}
       >
         <FaChevronRight size={14} />
