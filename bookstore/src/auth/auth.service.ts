@@ -6,6 +6,7 @@ export const AuthService = {
   async login(payload: LoginPayload): Promise<AuthUser> {
     const { data } = await http.post<LoginResponse>('/Auth/login', payload);
     const user: AuthUser = {
+      userId: data.user.userId,
       fullName: data.user.fullName,
       email: data.user.email,
       role: data.user.role,

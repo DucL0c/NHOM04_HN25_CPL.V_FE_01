@@ -4,8 +4,9 @@ export type LoginPayload = {
 };
 
 export type AuthUser = {
+  userId: number;
   email: string;
-  fullName: string;
+  name: string;
   role: string;
 };
 
