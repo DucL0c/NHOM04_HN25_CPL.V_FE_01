@@ -1,23 +1,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import authService from "../../services/authService";
-import { useAuthStore } from "../../store/auth.store";
-import { useContext } from "react";
-import { ToastContext } from "../../contexts/ToastProvider";
-import { jwtDecode } from "jwt-decode";
-import type { User } from "../../store/types/auth.types";
+import { useAuth } from "../../hooks/useAuth";
 
-interface LoginForm {
-  Email: string;
-  Password: string;
-}
-
-interface TokenPayload {
-  sub: string;
+interface LoginFormData {
   email: string;
-  role: "user" | "admin";
-  fullName?: string;
+  password: string;
 }
 
 interface LoginPageProps {
@@ -29,48 +17,28 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginForm>();
+  } = useForm<LoginFormData>();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const login = useAuthStore((state) => state.login);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const redirectPath = location.state?.from?.pathname || "/";
 
-  const { toast } = useContext(ToastContext);
-  const onSubmit = async (data: LoginForm) => {
-    const loadingId = toast.loading("Đang đăng nhập...");
+  const handleLogin = async (formData: LoginFormData) => {
     try {
-      const response = await authService.login(data);
-      if (response && typeof response === "object") {
-        Object.entries(response).forEach(([key, value]) => {
-          console.log(`[LOGIN] response.${key}:`, value);
-        });
-      } else {
-        console.log("[LOGIN] response:", response);
-      }
-      const { accessToken, user } = response?.data || {};
-      if (!accessToken || !user) {
-        throw new Error("Thiếu accessToken hoặc user trong response");
-      }
-      const decoded = jwtDecode<TokenPayload>(accessToken);
-      const fullUser: User = {
-        ...user,
-        role: decoded.role,
-        token: accessToken,
-      };
-      // Cập nhật store và localStorage
-      login(fullUser);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user", JSON.stringify(fullUser));
-      toast.success("Đăng nhập thành công!");
-      navigate(from, { replace: true });
+      await login({ email: formData.email, password: formData.password });
+      navigate(redirectPath, { replace: true });
       onSuccess?.();
-    } catch (err: any) {
-      const message = err?.response?.data?.message || "Đăng nhập thất bại!";
-      toast.error(message);
-    } finally {
-      toast.dismiss(loadingId);
+    } catch (error) {
+      setLoginError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      console.error("Login failed:", error);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   return (
@@ -82,100 +50,129 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             Nhập email và mật khẩu tài khoản của bạn
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Email */}
-            <div className="mb-4">
-              <input
-                type="email"
-                placeholder="abc@email.com"
-                className="w-full border-b border-gray-300 px-3 py-2 focus:outline-none focus:border-blue-500 bg-transparent"
-                {...register("Email", {
-                  required: "Vui lòng nhập email",
-                  pattern: {
-                    value: /\S+@\S+\.\S+/,
-                    message: "Email không hợp lệ",
-                  },
-                })}
-              />
-              {errors.Email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.Email.message}
-                </p>
-              )}
+          {loginError && (
+            <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
+              {loginError}
             </div>
+          )}
 
-            {/* Password */}
-            <div className="mb-4 relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Mật khẩu"
-                className="w-full border-b border-gray-300 px-3 py-2 focus:outline-none focus:border-blue-500 bg-transparent"
-                autoComplete="current-password"
-                {...register("Password", {
-                  required: "Vui lòng nhập mật khẩu",
-                  minLength: {
-                    value: 6,
-                    message: "Mật khẩu tối thiểu 6 ký tự",
-                  },
-                })}
-              />
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-sm text-blue-500 hover:underline"
-                onClick={() => setShowPassword((prev) => !prev)}
-              >
-                {showPassword ? "Ẩn" : "Hiện"}
-              </button>
-              {errors.Password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.Password.message}
-                </p>
-              )}
-            </div>
+          <form onSubmit={handleSubmit(handleLogin)}>
+            <EmailInput
+              register={register}
+              error={errors.email}
+            />
+            
+            <PasswordInput
+              register={register}
+              error={errors.password}
+              showPassword={showPassword}
+              onToggleVisibility={togglePasswordVisibility}
+            />
 
-            {/* Submit */}
-            <button
-              type="submit"
-              className="w-full bg-red-500 text-white py-2 rounded font-semibold hover:bg-red-600 mt-4"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
-            </button>
+            <SubmitButton isSubmitting={isSubmitting} />
           </form>
 
-          {/* Links */}
-          <div className="mt-4 space-y-8">
-            <a
-              href="/forgot-password"
-              className="text-sm text-blue-600 hover:underline w-fit"
-            >
-              Quên mật khẩu?
-            </a>
-            <p className="text-xs text-gray-500">
-              Chưa có tài khoản?{" "}
-              <a
-                href="/register"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                Tạo tài khoản
-              </a>
-            </p>
-          </div>
+          <LoginLinks />
         </div>
       </div>
 
-      {/* Banner */}
-      <div className="hidden md:flex w-[280px] flex-col items-center justify-center bg-[#E8F1FF] p-6">
-        <img
-          src="/login-illustration.png"
-          alt="login"
-          className="w-36 h-36 object-contain mb-3"
-        />
-        <h4 className="font-semibold text-[#1A66FF] mb-1">Mua sắm tại Tiki</h4>
-        <p className="text-xs text-gray-600">Siêu ưu đãi mỗi ngày</p>
-      </div>
+      <LoginBanner />
     </div>
   );
 };
+
+const EmailInput: React.FC<{
+  register: any;
+  error?: { message?: string };
+}> = ({ register, error }) => (
+  <div className="mb-4">
+    <input
+      type="email"
+      placeholder="abc@email.com"
+      className="w-full border-b border-gray-300 px-3 py-2 focus:outline-none focus:border-blue-500 bg-transparent"
+      {...register("email", {
+        required: "Vui lòng nhập email",
+        pattern: {
+          value: /\S+@\S+\.\S+/,
+          message: "Email không hợp lệ",
+        },
+      })}
+    />
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const PasswordInput: React.FC<{
+  register: any;
+  error?: { message?: string };
+  showPassword: boolean;
+  onToggleVisibility: () => void;
+}> = ({ register, error, showPassword, onToggleVisibility }) => (
+  <div className="mb-4 relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Mật khẩu"
+      className="w-full border-b border-gray-300 px-3 py-2 focus:outline-none focus:border-blue-500 bg-transparent"
+      autoComplete="current-password"
+      {...register("password", {
+        required: "Vui lòng nhập mật khẩu",
+        minLength: {
+          value: 6,
+          message: "Mật khẩu tối thiểu 6 ký tự",
+        },
+      })}
+    />
+    <button
+      type="button"
+      className="absolute right-2 top-2 text-sm text-blue-500 hover:underline"
+      onClick={onToggleVisibility}
+    >
+      {showPassword ? "Ẩn" : "Hiện"}
+    </button>
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const SubmitButton: React.FC<{ isSubmitting: boolean }> = ({ isSubmitting }) => (
+  <button
+    type="submit"
+    className="w-full bg-red-500 text-white py-2 rounded font-semibold hover:bg-red-600 mt-4"
+    disabled={isSubmitting}
+  >
+    {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
+  </button>
+);
+
+const LoginLinks: React.FC = () => (
+  <div className="mt-4 space-y-8">
+    <a
+      href="/forgot-password"
+      className="text-sm text-blue-600 hover:underline w-fit"
+    >
+      Quên mật khẩu?
+    </a>
+    <p className="text-xs text-gray-500">
+      Chưa có tài khoản?{" "}
+      <a
+        href="/register"
+        className="text-blue-600 hover:underline font-medium"
+      >
+        Tạo tài khoản
+      </a>
+    </p>
+  </div>
+);
+
+const LoginBanner: React.FC = () => (
+  <div className="hidden md:flex w-[280px] flex-col items-center justify-center bg-[#E8F1FF] p-6">
+    <img
+      src="/login-illustration.png"
+      alt="login"
+      className="w-36 h-36 object-contain mb-3"
+    />
+    <h4 className="font-semibold text-[#1A66FF] mb-1">Mua sắm tại Tiki</h4>
+    <p className="text-xs text-gray-600">Siêu ưu đãi mỗi ngày</p>
+  </div>
+);
 
 export default LoginPage;

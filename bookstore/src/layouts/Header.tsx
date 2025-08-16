@@ -1,20 +1,61 @@
 import { FaHome, FaUser, FaShoppingCart } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/auth.store";
 import LoginPage from "../pages/auth/LoginPage";
-import Popup from "../components/popup/Popup"; 
+import Popup from "../components/popup/Popup";
+import { useAuth } from "../hooks/useAuth";
 
 const Header = () => {
   const [openLogin, setOpenLogin] = useState(false);
-  const { user, logout } = useAuthStore();
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const accountBtnRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (user) setOpenLogin(false);
+    if (user) {
+      setOpenLogin(false);
+      setOpenDropdown(false); // Close dropdown when user logs in
+    }
   }, [user]);
+
+  // Handle clicks outside dropdown and popup
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      // Close dropdown if clicked outside
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        !accountBtnRef.current?.contains(e.target as Node)
+      ) {
+        setOpenDropdown(false);
+      }
+
+      // Close popup if clicked outside
+      if (
+        openLogin &&
+        popupRef.current &&
+        !popupRef.current.contains(e.target as Node) &&
+        !accountBtnRef.current?.contains(e.target as Node)
+      ) {
+        setOpenLogin(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openLogin]);
+
+  const handleAccountClick = () => {
+    if (user) {
+      setOpenDropdown((v) => !v);
+    } else {
+      setOpenLogin(true);
+    }
+  };
 
   return (
     <header className="w-full bg-white shadow">
@@ -27,9 +68,8 @@ const Header = () => {
           </span>
         </div>
 
-        {/* Wrapper: searchbar + icons + categories */}
+        {/* Wrapper */}
         <div className="flex-1 flex flex-col">
-          {/* Row 1: Searchbar + icons */}
           <div className="flex items-center justify-between mb-2">
             {/* Searchbar */}
             <div className="flex flex-1 max-w-2xl">
@@ -50,56 +90,82 @@ const Header = () => {
                 className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500"
                 onClick={() => navigate("/")}
               >
-                <span className="w-6 h-6 rounded-full flex items-center justify-center">
-                  <FaHome size={14} />
-                </span>
+                <FaHome size={14} />
                 <span className="text-sm">Trang chủ</span>
               </button>
 
               {/* User */}
-              {user ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-blue-600">
-                    {user.fullName}
+              <div className="relative">
+                <button
+                  ref={accountBtnRef}
+                  onClick={handleAccountClick}
+                  className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500"
+                >
+                  <FaUser size={14} />
+                  <span className="text-sm">
+                    {user ? user.email : "Tài khoản"}
                   </span>
-                  <button
-                    onClick={logout}
-                    className="text-sm text-red-500 hover:underline"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              ) : (
-                <>
-                  {/* Nút tài khoản (trigger popup) */}
-                  <button
-                    ref={accountBtnRef}
-                    onClick={() => setOpenLogin((v) => !v)}
-                    className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500"
-                  >
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center">
-                      <FaUser size={14} />
-                    </span>
-                    <span className="text-sm">Tài khoản</span>
-                  </button>
+                </button>
 
-                  {/* Popup thuần TS, không dùng Flowbite */}
-                  <Popup
-                    open={openLogin}
-                    onClose={() => setOpenLogin(false)}
-                    width={768}
-                    className="rounded-2xl overflow-hidden bg-white shadow-2xl dark:bg-gray-800"
+                {user && openDropdown && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
                   >
-                    <LoginPage onSuccess={() => setOpenLogin(false)} />
-                  </Popup>
-                </>
-              )}
+                    <button
+                      onClick={() => {
+                        navigate("/userprofile");
+                        setOpenDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Thông tin tài khoản
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate("/orders");
+                        setOpenDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Đơn hàng của tôi
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate("/support");
+                        setOpenDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Trung tâm hỗ trợ
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                        setOpenDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Popup login */}
+              <Popup
+                open={openLogin}
+                onClose={() => setOpenLogin(false)}
+                width={768}
+                className="rounded-2xl overflow-hidden bg-white shadow-2xl"
+              >
+                <LoginPage onSuccess={() => setOpenLogin(false)} />
+              </Popup>
 
               {/* Cart */}
               <button className="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 hover:text-blue-500">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center">
-                  <FaShoppingCart size={14} />
-                </span>
+                <FaShoppingCart size={14} />
                 <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
                   0
                 </span>
@@ -107,7 +173,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Row 2: Categories */}
+          {/* Row 2 */}
           <div className="flex gap-4 border-t border-gray-200 pt-2 text-sm text-gray-600">
             <span>Điện gia dụng</span>
             <span>Xe cộ</span>
