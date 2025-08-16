@@ -11,7 +11,12 @@ interface RegisterForm {
   ConfirmPassword: string;
 }
 
-const RegisterPage: React.FC = () => {
+interface RegisterPageProps {
+  onSuccess?: () => void;
+  onSwitch?: () => void;
+}
+
+const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onSwitch }) => {
   const {
     register,
     handleSubmit,
@@ -27,7 +32,7 @@ const RegisterPage: React.FC = () => {
     try {
       await authService.register(data);
       toast.success("Đăng ký thành công! Hãy đăng nhập.");
-      navigate("/login");
+      if (onSuccess) onSuccess();
     } catch (err: any) {
       const message = err?.response?.data?.message || "Đăng ký thất bại!";
       toast.error(message);
@@ -41,7 +46,9 @@ const RegisterPage: React.FC = () => {
       <div className="flex-1 p-8">
         <div className="w-full max-w-md mx-auto">
           <h2 className="text-2xl font-bold mb-2">Đăng ký tài khoản</h2>
-          <p className="text-gray-600 mb-6">Nhập thông tin để tạo tài khoản mới</p>
+          <p className="text-gray-600 mb-6">
+            Nhập thông tin để tạo tài khoản mới
+          </p>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Email */}
@@ -59,7 +66,9 @@ const RegisterPage: React.FC = () => {
                 })}
               />
               {errors.Email && (
-                <p className="text-red-500 text-sm mt-1">{errors.Email.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.Email.message}
+                </p>
               )}
             </div>
 
@@ -86,7 +95,9 @@ const RegisterPage: React.FC = () => {
                 {showPassword ? "Ẩn" : "Hiện"}
               </button>
               {errors.PasswordHash && (
-                <p className="text-red-500 text-sm mt-1">{errors.PasswordHash.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.PasswordHash.message}
+                </p>
               )}
             </div>
 
@@ -104,7 +115,9 @@ const RegisterPage: React.FC = () => {
                 })}
               />
               {errors.ConfirmPassword && (
-                <p className="text-red-500 text-sm mt-1">{errors.ConfirmPassword.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.ConfirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -120,12 +133,13 @@ const RegisterPage: React.FC = () => {
 
           {/* Links */}
           <div className="mt-4 space-y-8">
-            <a
-              href="/login"
-              className="text-sm text-blue-600 hover:underline w-fit"
+            <button
+              type="button"
+              className="text-sm text-blue-600 hover:underline w-fit bg-transparent border-0 outline-none p-0"
+              onClick={onSwitch}
             >
               Đã có tài khoản? Đăng nhập
-            </a>
+            </button>
           </div>
         </div>
       </div>

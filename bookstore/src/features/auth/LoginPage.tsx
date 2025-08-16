@@ -22,9 +22,10 @@ interface TokenPayload {
 
 interface LoginPageProps {
   onSuccess?: () => void;
+  onSwitch?: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onSuccess, onSwitch }) => {
   const {
     register,
     handleSubmit,
@@ -153,12 +154,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
             </a>
             <p className="text-xs text-gray-500">
               Chưa có tài khoản?{" "}
-              <a
-                href="/register"
-                className="text-blue-600 hover:underline font-medium"
+              <button
+                type="button"
+                className="text-blue-600 hover:underline font-medium bg-transparent border-0 outline-none p-0 ml-1"
+                onClick={onSwitch}
               >
                 Tạo tài khoản
-              </a>
+              </button>
             </p>
           </div>
         </div>
