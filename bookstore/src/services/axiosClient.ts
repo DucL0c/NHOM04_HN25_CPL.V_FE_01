@@ -1,23 +1,30 @@
-// src/services/axiosClient.ts
 import axios from "axios";
+import { authStore } from "../auth/auth.store";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:7061",
+  baseURL: import.meta.env.API_BASE_URL || "https://localhost:7061/api/",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Thêm interceptor cho request
-axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+axiosClient.interceptors.request.use((config) => {
+  const token = authStore.getState().accessToken;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axiosClient.interceptors.response.use(
+  (response) => response.data,
+  (err) => {
+    if (err.response?.status === 401) {
+      authStore.getState().clearAuth();
+      window.location.href = "/";
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
+    return Promise.reject(err);
+  }
 );
 
 export default axiosClient;
