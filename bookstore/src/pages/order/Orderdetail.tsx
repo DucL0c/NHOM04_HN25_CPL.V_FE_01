@@ -3,6 +3,7 @@ import { ChevronLeft, User, Bell, Package } from "lucide-react"
 import { useAuth } from "../../hooks/useAuth"
 import DataService from "../../services/axiosClient"
 
+
 interface UserDto {
   userId: number
   name: string
@@ -206,7 +207,7 @@ function OrderDetail() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
-          <aside className="bg-white rounded-lg p-4">
+          {/* <aside className="bg-white rounded-lg p-4">
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                 <User className="w-6 h-6 text-gray-600" />
@@ -230,7 +231,7 @@ function OrderDetail() {
                 <span>Quản lý đơn hàng</span>
               </div>
             </nav>
-          </aside>
+          </aside> */}
 
           {/* Main */}
           <main className="lg:col-span-3">

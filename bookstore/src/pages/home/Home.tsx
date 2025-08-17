@@ -5,10 +5,13 @@ import Banner from "../../components/banner/Banner";
 import BookFilterSort from "../../components/book/BookFilterSort";
 import type { BookListFilter, BookListSort } from "../../components/book/BookList";
 import BestSellingProducts from "../../components/book/BestSellingProducts";
+// import axiosClient from "../../services/axiosClient";
+// import type { BEBook } from "../../services/bookService";
 
 const Home: FC = () => {
   const [filter, setFilter] = useState<BookListFilter>({});
   const [sort, setSort] = useState<BookListSort>(0);
+
   return (
     <div className="container mx-auto px-8 py-4">
       {/* <h1 className="text-3xl font-bold text-gray-800">Chào mừng đến với Bookstore!</h1>
