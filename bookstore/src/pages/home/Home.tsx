@@ -3,7 +3,10 @@ import BookList from "../../components/book/BookList";
 import ProductCategories from "../../components/book/ProductCategories";
 import Banner from "../../components/banner/Banner";
 import BookFilterSort from "../../components/book/BookFilterSort";
-import type { BookListFilter, BookListSort } from "../../components/book/BookList";
+import type {
+  BookListFilter,
+  BookListSort,
+} from "../../components/book/BookList";
 import BestSellingProducts from "../../components/book/BestSellingProducts";
 
 const Home: FC = () => {
@@ -29,9 +32,7 @@ const Home: FC = () => {
           </div>
           {/* Danh mục nhỏ */}
           <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-bold mb-3">
-              Khám phá theo danh mục
-            </h3>
+            <h3 className="text-lg font-bold mb-3">Khám phá theo danh mục</h3>
             <div className="flex flex-wrap gap-20 p-3">
               <div className="flex flex-col items-center text-center">
                 <img
@@ -67,7 +68,12 @@ const Home: FC = () => {
               </div>
             </div>
           </div>
-          <BookFilterSort onChange={(f, s) => { setFilter(f); setSort(s); }} />
+          <BookFilterSort
+            onChange={(f, s) => {
+              setFilter(f);
+              setSort(s);
+            }}
+          />
           {/* BookList component will be rendered here */}
           <BookList filter={filter} sortBy={sort} />
         </div>

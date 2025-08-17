@@ -9,16 +9,28 @@ export type BEBook = {
   originalPrice: number;
   listPrice: number;
   quantitySold?: { value: number; text: string };
-  bookAuthors?: Array<{ author: { authorId: number; name: string; slug?: string | null } }>;
+  bookAuthors?: Array<{
+    author: { authorId: number; name: string; slug?: string | null };
+  }>;
   bookImages?: Array<{
-    baseUrl?: string | null; smallUrl?: string | null; mediumUrl?: string | null;
-    largeUrl?: string | null; thumbnailUrl?: string | null;
+    baseUrl?: string | null;
+    smallUrl?: string | null;
+    mediumUrl?: string | null;
+    largeUrl?: string | null;
+    thumbnailUrl?: string | null;
   }>;
   bookSellers?: Array<{
-    id?: number; sku?: string; price?: number; isBestStore?: boolean;
+    id?: number;
+    sku?: string;
+    price?: number;
+    isBestStore?: boolean;
     seller?: { sellerId: number; name: string; logo?: string | null };
   }>;
-  bookSpecifications?: Array<{ id: number; specName: string; specValue: string }>;
+  bookSpecifications?: Array<{
+    id: number;
+    specName: string;
+    specValue: string;
+  }>;
   productReviews?: Array<{
     reviewId: number;
     rating: number;
@@ -38,12 +50,23 @@ export type FEBook = {
   id: string;
   name: string;
   authors: Array<{ id: number; name: string; slug: string }>;
-  images: Array<{ base_url: string; large_url: string; medium_url: string; thumbnail_url: string }>;
+  images: Array<{
+    base_url: string;
+    large_url: string;
+    medium_url: string;
+    thumbnail_url: string;
+  }>;
   description: string;
   short_description: string;
   list_price: number;
   original_price: number;
-  current_seller: { id: number; name: string; logo: string; price: number; sku: string };
+  current_seller: {
+    id: number;
+    name: string;
+    logo: string;
+    price: number;
+    sku: string;
+  };
   rating_average: number;
   quantity_sold: { text: string; value: number };
   categories: { id: number; name: string; is_leaf?: boolean };
@@ -65,11 +88,15 @@ const mapBEToFE = (b: BEBook): FEBook => {
     id: String(b.bookId),
     name: b.name,
     authors: (b.bookAuthors ?? []).map((a) => ({
-      id: a.author.authorId, name: a.author.name, slug: a.author.slug || "",
+      id: a.author.authorId,
+      name: a.author.name,
+      slug: a.author.slug || "",
     })),
     images: (b.bookImages ?? []).map((img) => ({
-      base_url: img.baseUrl || "", large_url: img.largeUrl || "",
-      medium_url: img.mediumUrl || "", thumbnail_url: img.thumbnailUrl || "",
+      base_url: img.baseUrl || "",
+      large_url: img.largeUrl || "",
+      medium_url: img.mediumUrl || "",
+      thumbnail_url: img.thumbnailUrl || "",
     })),
     description: b.description || "",
     short_description: b.shortDescription || "",
@@ -85,23 +112,37 @@ const mapBEToFE = (b: BEBook): FEBook => {
         }
       : { id: 0, name: "Seller", logo: "", price: 0, sku: "" },
     rating_average: b.ratingAverage ?? 0,
-    quantity_sold: { text: b.quantitySold?.text || "", value: b.quantitySold?.value ?? 0 },
+    quantity_sold: {
+      text: b.quantitySold?.text || "",
+      value: b.quantitySold?.value ?? 0,
+    },
     categories: b.category
-      ? { id: b.category.categoryId, name: b.category.name, is_leaf: !!b.category.isLeaf }
+      ? {
+          id: b.category.categoryId,
+          name: b.category.name,
+          is_leaf: !!b.category.isLeaf,
+        }
       : { id: 0, name: "", is_leaf: false },
-    specifications: (b.bookSpecifications ?? []).map((s) => ({ name: s.specName, value: s.specValue })),
+    specifications: (b.bookSpecifications ?? []).map((s) => ({
+      name: s.specName,
+      value: s.specValue,
+    })),
     // ✅ map reviews
     reviews: (b.productReviews ?? []).map((r) => ({
       id: r.reviewId,
       rating: r.rating,
       comment: r.comment,
       date: r.reviewDate,
-      user: { id: r.user.userId, name: r.user.fullName, nickName: r.user.nickName || undefined },
+      user: {
+        id: r.user.userId,
+        name: r.user.fullName,
+        nickName: r.user.nickName || undefined,
+      },
     })),
   };
 };
 
 export const getBookById = async (id: string): Promise<FEBook> => {
-  const raw = await DataService.get<BEBook, any>(`/Book/byId/${id}`);
+  const raw = await DataService.get<BEBook, any>(`byId/${id}`);
   return mapBEToFE(raw);
 };
