@@ -5,6 +5,7 @@ import Checkout from "../pages/order/Checkout";
 import Confirm from "../pages/order/Comfirm";
 import OrderDetail from "../pages/order/Orderdetail";
 import Cart from "../pages/cart/Cart";
+import AccountLayout from "../pages/lazylayout";
 
 const Home = lazy(() => import("../pages/home"));
 const BookDetail = lazy(() => import("../pages/books/BookDetail"));
@@ -41,6 +42,10 @@ export const routes = [
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path:"/test",
+        element: <AccountLayout />,
       }
     ],
   },
