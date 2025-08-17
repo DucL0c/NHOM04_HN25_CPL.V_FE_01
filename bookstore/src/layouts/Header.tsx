@@ -112,7 +112,7 @@ const Header = () => {
                   >
                     <button
                       onClick={() => {
-                        navigate("/userprofile");
+                        navigate("/test");
                         setOpenDropdown(false);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
