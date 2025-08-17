@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useLocation, useNavigate } from "react-router-dom"
-import { useMemo, useState } from "react"
-import { ChevronRight } from "lucide-react"
+import { useLocation, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 type CheckoutItem = {
-  id: string
-  name: string
-  price: number | string // có thể là "110.000 ₫"
-  image?: string
-  seller?: string
-}
-type CheckoutState = { item: CheckoutItem; quantity: number }
+  id: string;
+  name: string;
+  price: number | string;
+  image?: string;
+  seller?: string;
+};
+type CheckoutState = { item: CheckoutItem; quantity: number };
 
 const SHIPPING_METHODS = [
   { id: "express", name: "Giao siêu tốc 2h", fee: 25000, note: "-25K", badge: "NOW" },
   { id: "economy", name: "Giao tiết kiệm", fee: 16000, note: "-16K" },
-] as const
+] as const;
 
 const PAYMENT_METHODS = [
   { id: "cod", name: "Thanh toán tiền mặt" },
   { id: "viettel", name: "Viettel Money" },
-] as const
+] as const;
 
 const CARD_PROMOS = [
   { id: "shin-plat", title: "Freeship", sub: "Thẻ Shinhan Platinum", bank: "Shinhan Bank", available: true },
@@ -36,46 +36,59 @@ const CARD_PROMOS = [
   { id: "giam30-tiki", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: false },
   { id: "giam50-tiki", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: false },
   { id: "freeship-tiki", title: "Freeship", sub: "TikiCARD", bank: "TikiCARD", available: false, special: true },
-] as const
+] as const;
 
 function toNumberVND(p: unknown): number {
-  if (typeof p === "number" && !Number.isNaN(p)) return p
+  if (typeof p === "number" && !Number.isNaN(p)) return p;
   if (typeof p === "string") {
-    const digits = p.replace(/[^\d]/g, "")
-    return digits ? Number(digits) : 0
+    const digits = p.replace(/[^\d]/g, "");
+    return digits ? Number(digits) : 0;
   }
-  return 0
+  return 0;
+}
+function formatVND(n: number) {
+  return new Intl.NumberFormat("vi-VN").format(n) + "₫";
+}
+function weekdayVi(d: Date) {
+  return ["CN", "thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7"][d.getDay()];
+}
+function etaTextEconomy(days = 3) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `Dự kiến giao ${weekdayVi(d)}, trước 13h, ${dd}/${mm}`;
 }
 
-function formatVND(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + "₫"
-}
 
 export default function Checkout() {
-  const nav = useNavigate()
-  const { state } = useLocation()
-  const data = state as CheckoutState | null
+  const nav = useNavigate();
+  const { state } = useLocation();
+  const data = state as CheckoutState | null;
 
-  // Fallback khi vào trực tiếp không có state
-  const [item] = useState<CheckoutItem | null>(data?.item ?? null)
-  const [qty] = useState<number>(Math.max(1, data?.quantity ?? 1))
+  const [item] = useState<CheckoutItem | null>(data?.item ?? null);
+  const [qty] = useState<number>(Math.max(1, data?.quantity ?? 1));
 
-  const [shipId, setShipId] = useState<string>("express")
-  const [payId, setPayId] = useState<string>("cod")
-  const [chosenPromo, setChosenPromo] = useState<string | null>(null)
+  const [shipId, setShipId] = useState<string>("express");
+  const [payId, setPayId] = useState<string>("cod");
+  const [applyShipDiscount, setApplyShipDiscount] = useState<boolean>(true);
+  const [chosenPromo, setChosenPromo] = useState<string | null>(null);
 
-  const ship = useMemo(() => SHIPPING_METHODS.find((s) => s.id === shipId), [shipId])
+  const ship = useMemo(() => SHIPPING_METHODS.find((s) => s.id === shipId), [shipId]);
+  const price = useMemo(() => toNumberVND(item?.price as any), [item]);
+  const subtotal = price * qty;
 
-  const price = useMemo(() => toNumberVND(item?.price as any), [item])
-  const subtotal = price * qty
+  const directDiscount = 59000;
+  const baseShipFee = ship ? ship.fee : 0;
+  const shipDiscount = shipId === "express" ? 25000 : 16000;
 
-  // Giảm giá demo giống ảnh
-  const directDiscount = 59000
-  const shipDiscount = shipId === "express" ? 25000 : 16000
-  const baseShipFee = ship ? ship.fee : 0
-  const shippingFee = Math.max(0, baseShipFee - shipDiscount)
+  const total = Math.max(
+    0,
+    subtotal + baseShipFee - directDiscount - (applyShipDiscount ? shipDiscount : 0)
+  );
 
-  const total = Math.max(0, subtotal + shippingFee - directDiscount)
+  // ETA cho header "Gói: ..."
+  const packageETA = shipId === "economy" ? etaTextEconomy(3) : "";
 
   if (!item) {
     return (
@@ -87,34 +100,25 @@ export default function Checkout() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   const handlePlaceOrder = () => {
-    if (!item) return
-
-    const orderCode = Math.floor(100000000 + Math.random() * 900000000).toString()
-    const etaText = (() => {
-      const d = new Date()
-      d.setDate(d.getDate() + 2)
-      const dd = String(d.getDate()).padStart(2, "0")
-      const mm = String(d.getMonth() + 1).padStart(2, "0")
-      const weekday = ["CN", "thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7"][d.getDay()]
-      return `Giao ${weekday}, trước 13h, ${dd}/${mm}`
-    })()
-
+    const orderCode = Math.floor(100000000 + Math.random() * 900000000).toString();
+    const etaForConfirm = packageETA; // gửi sang confirm
     nav("/confirm", {
       state: {
         items: [{ item, quantity: qty }],
         shipId,
         payId,
         chosenPromo,
+        applyShipDiscount,
         total,
         orderCode,
-        etaText,
+        etaText: etaForConfirm,
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -128,47 +132,73 @@ export default function Checkout() {
                 <div className="font-semibold text-lg">Chọn hình thức giao hàng</div>
               </div>
 
-              {/* Box 1: Delivery Options */}
+              {/* Box 1: Options */}
               <div className="p-6">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 space-y-4">
-                  {SHIPPING_METHODS.map((s) => (
-                    <label
-                      key={s.id}
-                      className={`flex items-center gap-3 cursor-pointer ${
-                        shipId === s.id ? "text-blue-600" : "text-gray-700"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="ship"
-                        className="accent-blue-600"
-                        checked={shipId === s.id}
-                        onChange={() => setShipId(s.id)}
-                      />
-                      <div className="flex items-center gap-2">
-                        {s.badge && (
-                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">{s.badge}</span>
+                  {SHIPPING_METHODS.map((s) => {
+                    const selected = shipId === s.id;
+                    return (
+                      <label
+                        key={s.id}
+                        className={`block cursor-pointer ${selected ? "text-blue-600" : "text-gray-700"}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="ship"
+                            className="accent-blue-600"
+                            checked={selected}
+                            onChange={() => setShipId(s.id)}
+                          />
+                          <div className="flex items-center gap-2">
+                            {s.badge && (
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">NOW</span>
+                            )}
+                            <span className="font-medium">{s.name}</span>
+                            <span className="text-green-600 font-medium">{s.note}</span>
+                          </div>
+                        </div>
+                        {/* ETA hint ngay dưới option khi chọn tiết kiệm */}
+                        {selected && s.id === "economy" && (
+                          <div className="pl-7 mt-1 text-xs text-gray-600">{etaTextEconomy(3)}</div>
                         )}
-                        <span className="font-medium">{s.name}</span>
-                        <span className="text-green-600 font-medium">{s.note}</span>
-                      </div>
-                    </label>
-                  ))}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Box 2: Selected Book Details */}
+              {/* Box 2: Selected package like screenshot */}
               <div className="px-6 pb-6">
                 <div className="border rounded-lg p-5 bg-white">
+                  {/* Header dòng xanh: Gói: <tên>, <ETA> */}
                   <div className="text-sm text-green-600 font-medium flex items-center gap-2 mb-3">
-                    📦 Gói: Giao siêu tốc 2h, trước 13h hôm nay
+                    <span>📅</span>
+                    <span>
+                      Gói: {ship?.name}
+                      {packageETA && `, ${packageETA}`}
+                    </span>
                   </div>
+
+                  {/* Line with NOW / name / price strike / FREE or fee */}
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">NOW</span>
-                    <span className="font-medium">GIAO SIÊU TỐC 2H</span>
-                    <span className="line-through text-gray-400">25.000 ₫</span>
-                    <span className="text-green-600 font-medium">MIỄN PHÍ</span>
+                    {shipId === "express" && (
+                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">NOW</span>
+                    )}
+                    <span className="font-medium uppercase">{ship?.name}</span>
+
+                    {applyShipDiscount ? (
+                      <>
+                        <span className="flex-1 border-t border-gray-200 mx-2" />
+                        <span className="line-through text-gray-400">{formatVND(baseShipFee)}</span>
+                        <span className="text-green-600 font-medium">MIỄN PHÍ</span>
+                      </>
+                    ) : (
+                      <span className="text-gray-700 font-medium ml-2">{formatVND(baseShipFee)}</span>
+                    )}
                   </div>
+
+                  {/* Product row */}
                   <div className="flex items-center gap-3">
                     <img
                       src={item.image || "/placeholder.svg?height=44&width=44"}
@@ -180,7 +210,9 @@ export default function Checkout() {
                       <div className="text-gray-500 text-sm">SL: x{qty}</div>
                     </div>
                     <div className="text-right">
-                      <div className="line-through text-gray-400 text-sm">{formatVND(Math.max(0, price + 59000))}</div>
+                      <div className="line-through text-gray-400 text-sm">
+                        {formatVND(Math.max(0, price + 59000))}
+                      </div>
                       <div className="text-red-600 font-semibold">{formatVND(price)}</div>
                     </div>
                   </div>
@@ -220,12 +252,12 @@ export default function Checkout() {
                   </label>
                 ))}
 
-                {/* Card promotions section under payment methods */}
+                {/* Card promotions */}
                 <div className="mt-8">
                   <div className="font-medium text-lg mb-4">Ưu đãi thanh toán thẻ</div>
                   <div className="grid grid-cols-3 gap-4">
                     {CARD_PROMOS.map((c) => {
-                      const active = chosenPromo === c.id
+                      const active = chosenPromo === c.id;
                       return (
                         <button
                           key={c.id}
@@ -246,7 +278,7 @@ export default function Checkout() {
                           <div className="text-xs text-gray-600">{c.sub}</div>
                           {!c.available && <div className="text-xs text-orange-600 mt-1">Không giới hạn</div>}
                         </button>
-                      )
+                      );
                     })}
                   </div>
                 </div>
@@ -256,7 +288,7 @@ export default function Checkout() {
 
           {/* RIGHT: order summary */}
           <aside className="lg:col-span-4 lg:sticky lg:top-6 self-start space-y-6">
-            {/* Giao tới */}
+            {/* Address */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between">
                 <div>
@@ -277,31 +309,39 @@ export default function Checkout() {
                 <div className="font-semibold text-lg">Tiki Khuyến Mãi</div>
                 <div className="text-sm text-gray-600">Có thể chọn 2 🔄</div>
               </div>
+
               <div className="p-4 border rounded-lg bg-green-50 border-green-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
                       <span className="text-white text-xs">🎫</span>
                     </div>
-                    <div className="text-sm font-medium">Giảm 25K</div>
+                    <div className="text-sm font-medium">
+                      Giảm {formatVND(shipDiscount)} phí vận chuyển
+                    </div>
                   </div>
-                  <button className="text-blue-600 text-sm bg-blue-100 px-3 py-1 rounded">Bỏ Chọn</button>
+                  <button
+                    className="text-blue-600 text-sm bg-blue-100 px-3 py-1 rounded"
+                    onClick={() => setApplyShipDiscount((v) => !v)}
+                  >
+                    {applyShipDiscount ? "Bỏ Chọn" : "Chọn"}
+                  </button>
                 </div>
               </div>
+
               <button className="text-blue-600 text-sm mt-4 flex items-center gap-1">
                 🎯 Chọn hoặc nhập mã khác
                 <ChevronRight className="w-3 h-3" />
               </button>
             </div>
 
-            {/* Đơn hàng */}
+            {/* Order summary */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="font-semibold text-lg mb-4">Đơn hàng</div>
               <div className="text-sm text-gray-600 mb-4">
                 1 sản phẩm. <button className="text-blue-600">Xem thông tin</button>
               </div>
 
-              {/* Items small summary */}
               <div className="flex gap-3 mb-4">
                 <img
                   src={item.image || "/placeholder.svg?height=56&width=56"}
@@ -315,30 +355,36 @@ export default function Checkout() {
                 <div className="text-sm font-medium">{formatVND(price)}</div>
               </div>
 
-              {/* Totals */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Tổng tiền hàng</span>
                   <span>{formatVND(subtotal)}</span>
                 </div>
+
                 <div className="flex justify-between">
                   <span>Phí vận chuyển</span>
-                  <span>{formatVND(shippingFee)}</span>
+                  <span>{formatVND(baseShipFee)}</span>
                 </div>
+
                 <div className="flex justify-between text-green-600">
                   <span>Giảm giá trực tiếp</span>
                   <span>-{formatVND(directDiscount)}</span>
                 </div>
-                <div className="flex justify-between text-green-600">
-                  <span>Giảm giá vận chuyển</span>
-                  <span>-{formatVND(shipDiscount)}</span>
-                </div>
+
+                {applyShipDiscount && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Giảm giá vận chuyển</span>
+                    <span>-{formatVND(shipDiscount)}</span>
+                  </div>
+                )}
 
                 <div className="pt-3 mt-3 border-t">
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="text-gray-600">Tổng tiền thanh toán</div>
-                      <div className="text-xs text-green-600">Tiết kiệm {formatVND(directDiscount + shipDiscount)}</div>
+                      <div className="text-xs text-green-600">
+                        Tiết kiệm {formatVND(directDiscount + (applyShipDiscount ? shipDiscount : 0))}
+                      </div>
                     </div>
                     <div className="text-xl font-bold text-red-600">{formatVND(total)}</div>
                   </div>
@@ -359,5 +405,5 @@ export default function Checkout() {
         </div>
       </div>
     </div>
-  )
+  );
 }
