@@ -14,6 +14,7 @@ import {
   Eye,
   ChevronRight,
 } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
 interface FEReviewUser {
   id: number;
@@ -159,6 +160,7 @@ const GridSkeleton = ({ count = 8 }: { count?: number }) => (
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth()
 
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -176,6 +178,7 @@ const BookDetail = () => {
   const [simPage, setSimPage] = useState(0);
   const TOP_PAGE_SIZE = 4; // 1 hàng x 4 cột
   const SIM_PAGE_SIZE = 8; // 2 hàng x 4 cột
+  
 
   // Reset UI khi đổi route /books/:id
   useEffect(() => {
@@ -231,7 +234,19 @@ const BookDetail = () => {
 
   const handleAddToCart = () => {
     if (!book) return;
-    ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+    DataService.post("/Cart/create", {
+      UserId: user?.userId,
+      BookId: book.id,
+      Quantity: quantity,
+    })
+      .then(() => {
+        ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+      })
+      .catch((err) => {
+        console.error("Add to cart failed:", err);
+        ToastService.error("Thêm vào giỏ hàng thất bại");
+      });
+    //ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
   };
 
   const handleBuyNow = () => {
