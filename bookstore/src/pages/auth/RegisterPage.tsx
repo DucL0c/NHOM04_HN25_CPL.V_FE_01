@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import authService from "../../services/authService";
 import { useContext } from "react";
 import { ToastContext } from "../../contexts/ToastProvider";
+import DataService from "../../services/axiosClient";
 
 interface RegisterForm {
   Email: string;
@@ -25,7 +25,7 @@ const RegisterPage: React.FC = () => {
   const onSubmit = async (data: RegisterForm) => {
     const loadingId = toast.loading("Đang đăng ký...");
     try {
-      await authService.register(data);
+      await DataService.post("/Auth/register", data);
       toast.success("Đăng ký thành công! Hãy đăng nhập.");
       navigate("/login");
     } catch (err: any) {
