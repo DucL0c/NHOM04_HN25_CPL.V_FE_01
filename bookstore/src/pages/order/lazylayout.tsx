@@ -1,19 +1,40 @@
-"use client";
-
-import { useState, Suspense, lazy } from "react";
+import { useState, Suspense, lazy, useEffect } from "react";
 import { User, Bell, Package } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
-
+import { useAuth } from "../../hooks/useAuth";
+import DataService from "../../services/axiosClient"
 // Lazy load components
-const UserProfile = lazy(() => import("./profile/Profile"));
-const OrderDetail = lazy(() => import("./order/Orderdetail"));
+const UserProfile = lazy(() => import("../profile/Profile"));
+const OrderDetail = lazy(() => import("./Orderdetail"));
 
 type View = "profile" | "orders" | "notifications";
-
+interface UserData {
+  userId: string;
+  name: string;
+  email: string;
+  phone?: string;
+}
 export default function AccountLayout() {
   const [currentView, setCurrentView] = useState<View>("profile");
   const { user, isAuthenticated } = useAuth();
+    const [users, setUsers] = useState<UserData[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // Gọi API lấy danh sách user
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        const data = await DataService.get<UserData[], any>("/Users/getall");
+        setUsers(data);
+      } catch (err) {
+        console.error("Lỗi khi gọi API /Users/getall:", err);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
   const renderView = () => {
     if (!isAuthenticated) {
       return (
@@ -48,7 +69,7 @@ export default function AccountLayout() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <aside className="bg-white rounded-lg shadow-sm p-4">
+          <aside className=" p-4 min-h-screen">
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                 <User className="w-6 h-6 text-gray-600" />
