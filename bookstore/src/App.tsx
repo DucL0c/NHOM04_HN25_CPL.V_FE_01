@@ -3,7 +3,7 @@ import AppRoutes from "./routes"
 import { Suspense } from "react"
 import { BrowserRouter } from "react-router-dom"
 import { Toaster } from "react-hot-toast"
-
+import { CartCountProvider } from "./contexts/CartCountContext"
 
 
 function App() {
@@ -12,7 +12,9 @@ function App() {
       <Toaster position="top-right" />
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
-          <AppRoutes />
+          <CartCountProvider>
+            <AppRoutes />
+          </CartCountProvider>
         </Suspense>
       </BrowserRouter>
     </>

@@ -14,6 +14,7 @@ import {
   Eye,
   ChevronRight,
 } from "lucide-react";
+import { useCartCount } from "../../contexts/CartCountContext";
 import { useAuth } from "../../hooks/useAuth";
 
 interface FEReviewUser {
@@ -160,7 +161,8 @@ const GridSkeleton = ({ count = 8 }: { count?: number }) => (
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth()
+  const { user } = useAuth();
+  const { refreshCartCount } = useCartCount();  
 
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -241,6 +243,8 @@ const BookDetail = () => {
     })
       .then(() => {
         ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+        // Refresh cart count
+        refreshCartCount();
       })
       .catch((err) => {
         console.error("Add to cart failed:", err);

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useCartCount } from "../contexts/CartCountContext";
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ const Header = () => {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { cartCount } = useCartCount(); // Ensure this is declared only once
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const accountBtnRef = useRef<HTMLButtonElement>(null);
@@ -48,6 +50,7 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openLogin]);
+
 
   const handleAccountClick = () => {
     if (user) {
@@ -178,9 +181,7 @@ const Header = () => {
                     height={24}
                     className="object-contain"
                   />
-                  <span className="text-sm">
-                    {"Tài khoản"}
-                  </span>
+                  <span className="text-sm">{"Tài khoản"}</span>
                 </button>
 
                 {user && openDropdown && (
@@ -253,7 +254,7 @@ const Header = () => {
                     className="object-contain"
                   />
                   <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                    0
+                      {cartCount}
                   </span>
                 </div>
               </button>

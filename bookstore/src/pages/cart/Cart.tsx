@@ -3,6 +3,7 @@ import axiosClient from "../../services/axiosClient";
 import CartItem from "../../components/cart/CartItem";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useCartCount } from "../../contexts/CartCountContext";
 
 export interface CartItemProps {
   cartItemId: number;
@@ -43,7 +44,7 @@ export interface CartItemProps {
   };
 }
 
-interface CartProps {
+export interface CartProps {
   cartId: number;
   userId: number;
   cartItems: Array<CartItemProps>;
@@ -54,6 +55,7 @@ const Cart: React.FC = () => {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
+  const { refreshCartCount } = useCartCount();
   const navigate = useNavigate();
 
   const fetchCart = async () => {
@@ -99,6 +101,7 @@ const Cart: React.FC = () => {
       );
       setCheckedItems([]);
       fetchCart();
+      refreshCartCount();
       setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting selected cart items", error);
