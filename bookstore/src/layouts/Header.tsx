@@ -50,11 +50,17 @@ const Header = () => {
   }, [openLogin]);
 
   const handleAccountClick = () => {
-    if (user) {
-      setOpenDropdown((v) => !v);
-    } else {
+    if (!user) {
       setOpenLogin(true);
     }
+  };
+
+  // Hover mở dropdown nếu đã đăng nhập
+  const handleAccountMouseEnter = () => {
+    if (user) setOpenDropdown(true);
+  };
+  const handleAccountMouseLeave = () => {
+    if (user) setOpenDropdown(false);
   };
 
   // Hàm xử lý search
@@ -108,7 +114,7 @@ const Header = () => {
               height={40}
             />
             <span
-              className="font-normal mt-2 w-full block text-center cursor-pointer"
+              className="font-semibold mt-2 w-full block text-center cursor-pointer"
               style={{ color: "rgb(0,62,161)" }}
             >
               Tốt & Nhanh
@@ -117,8 +123,8 @@ const Header = () => {
         </div>
 
         {/* Wrapper */}
-        <div className="flex-1 flex flex-col gap-x-2 gap-y-2 text-[14px] ml-12">
-          <div className="flex items-center justify-between h-[40px] p-0 relative z-2">
+        <div className="flex-1 flex flex-col gap-x-2 gap-y-2 text-[14px]">
+          <div className="flex items-center justify-between h-[40px] relative z-2">
             {/* Searchbar */}
             <div className="flex items-center bg-white border border-gray-300 rounded overflow-hidden h-10 font-inter text-[14px] leading-[16.1px] flex-grow box-border">
               <img
@@ -165,7 +171,11 @@ const Header = () => {
               </button>
 
               {/* User */}
-              <div className="relative">
+              <div
+                className="relative"
+                onMouseEnter={handleAccountMouseEnter}
+                onMouseLeave={handleAccountMouseLeave}
+              >
                 <button
                   ref={accountBtnRef}
                   onClick={handleAccountClick}
@@ -178,9 +188,7 @@ const Header = () => {
                     height={24}
                     className="object-contain"
                   />
-                  <span className="text-sm">
-                    {"Tài khoản"}
-                  </span>
+                  <span className="text-sm">{"Tài khoản"}</span>
                 </button>
 
                 {user && openDropdown && (
