@@ -166,7 +166,7 @@ const LoginLinks: React.FC = () => (
 const LoginBanner: React.FC = () => (
   <div className="hidden md:flex w-[280px] flex-col items-center justify-center bg-[#E8F1FF] p-6">
     <img
-      src="/login-illustration.png"
+      src="/Header/logologin.jpg"
       alt="login"
       className="w-36 h-36 object-contain mb-3"
     />

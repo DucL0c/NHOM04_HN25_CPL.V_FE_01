@@ -16,7 +16,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-
 const mapBEToFE = (b: BEBook): Book => {
   const best = b.bookSellers?.find((s) => s.isBestStore) || b.bookSellers?.[0];
   return {
