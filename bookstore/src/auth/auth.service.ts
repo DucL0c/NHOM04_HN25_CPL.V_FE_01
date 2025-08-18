@@ -7,7 +7,7 @@ export const AuthService = {
     const { data } = await http.post<LoginResponse>('/Auth/login', payload);
     const user: AuthUser = {
       userId: data.user.userId,
-      fullName: data.user.fullName,
+      name: data.user.name,
       email: data.user.email,
       role: data.user.role,
     };
@@ -33,6 +33,4 @@ export const AuthService = {
     }
     return null;
   },
-
-  
 };

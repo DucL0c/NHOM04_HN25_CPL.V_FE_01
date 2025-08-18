@@ -190,7 +190,7 @@ const Header = () => {
                   >
                     <button
                       onClick={() => {
-                        navigate("/userprofile");
+                        navigate("customer/account");
                         setOpenDropdown(false);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
@@ -199,7 +199,7 @@ const Header = () => {
                     </button>
                     <button
                       onClick={() => {
-                        navigate("/orders");
+                        navigate("customer/orders");
                         setOpenDropdown(false);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
