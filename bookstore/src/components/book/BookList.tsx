@@ -10,9 +10,10 @@ export interface BookListFilter {
   topDeal?: boolean;
   freeshipXtra?: boolean;
   minRating?: number;
+  keyword?: string;
 }
 
-export type BookListSort = 0| 3 | 4;
+export type BookListSort = 0 | 3 | 4;
 
 interface BookListProps {
   filter?: BookListFilter;
@@ -39,9 +40,19 @@ const BookList: React.FC<BookListProps> = ({ filter, sortBy }) => {
     const fetchBooks = async () => {
       try {
         // Build params for API
-        const params: any = { page: currentPage, pageSize: LIMIT, sortBy: sortBy };
+        const params: any = {
+          page: currentPage,
+          pageSize: LIMIT,
+          sortBy: sortBy,
+        };
+        if (filter?.keyword) {
+          params.keyword = filter.keyword;
+        }
 
-        const response = await axiosClient.get<BookListState, any>("/Book/getallbypaging", { params });
+        const response = await axiosClient.get<BookListState, any>(
+          "/Book/getallbypaging",
+          { params }
+        );
         setBooks(response.items);
         setTotalPages(response.totalPages);
         console.log("Fetched books:", response.items);

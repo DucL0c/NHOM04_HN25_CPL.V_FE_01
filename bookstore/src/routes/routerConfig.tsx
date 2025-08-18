@@ -8,7 +8,9 @@ const AccountLayout = lazy(() => import("../layouts/AccountLayout"));
 const MainLayout = lazy(() => import("../layouts/MainLayout"));
 const UserProfile = lazy(() => import("../pages/profile/Profile"));
 const Checkout = lazy(() => import("../pages/order/Checkout"));
+
 const Confirm = lazy(() => import("../pages/order/Comfirm"));
+const SearchPage = lazy(() => import("../pages/search/SearchPage"));
 
 export const routes = [
   {
@@ -20,12 +22,12 @@ export const routes = [
         element: <Home />,
       },
       {
-        path: "books/:id", 
+        path: "books/:id",
         element: <BookDetail />,
       },
-      { 
-        path: "/checkout", 
-        element: <Checkout /> 
+      {
+        path: "/checkout",
+        element: <Checkout />,
       },
       {
         path: "/confirm",
@@ -36,29 +38,35 @@ export const routes = [
         element: <Cart />,
       },
       {
-      path: "/customer",
-      element: <AccountLayout />,   
-      children: [
-        {
-          path: "account",
-          element: <UserProfile />,
-        },
-        {
-          path: "notification",
-          element: (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-2">Thông báo của tôi</h2>
-              <p className="text-gray-500">Hiện chưa có thông báo nào</p>
-            </div>
-          ),
-        },
-        {
-          path: "orders",
-          element: <OrderList />,
-        },
-      ],
-    }
+        path: "/customer",
+        element: <AccountLayout />,
+        children: [
+          {
+            path: "account",
+            element: <UserProfile />,
+          },
+          {
+            path: "notification",
+            element: (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-2">
+                  Thông báo của tôi
+                </h2>
+                <p className="text-gray-500">Hiện chưa có thông báo nào</p>
+              </div>
+            ),
+          },
+          {
+            path: "orders",
+            element: <OrderList />,
+          },
+        ],
+      },
 
+      {
+        path: "/search",
+        element: <SearchPage />,
+      },
     ],
   },
 ];

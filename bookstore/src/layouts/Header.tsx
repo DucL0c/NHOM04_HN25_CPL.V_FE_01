@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LoginPage from "../pages/auth/LoginPage";
 import Popup from "../components/popup/Popup";
@@ -55,29 +54,33 @@ const Header = () => {
     }
   };
 
-  // Hover mở dropdown nếu đã đăng nhập
-  const handleAccountMouseEnter = () => {
-    if (user) setOpenDropdown(true);
+  // Hover mở dropdown nếu đã đăng nhập, fix nháy bằng timeout và onMouseOver/onMouseOut
+  const hoverAreaRef = useRef<HTMLDivElement>(null);
+  const closeDropdownTimeout = useRef<NodeJS.Timeout | null>(null);
+  const handleAccountMouseOver = () => {
+    if (user) {
+      if (closeDropdownTimeout.current)
+        clearTimeout(closeDropdownTimeout.current);
+      setOpenDropdown(true);
+    }
   };
-  const handleAccountMouseLeave = () => {
-    if (user) setOpenDropdown(false);
+  const handleAccountMouseOut = (e: React.MouseEvent) => {
+    if (
+      user &&
+      hoverAreaRef.current &&
+      !hoverAreaRef.current.contains(e.relatedTarget as Node)
+    ) {
+      closeDropdownTimeout.current = setTimeout(
+        () => setOpenDropdown(false),
+        80
+      );
+    }
   };
 
-  // Hàm xử lý search
-  const handleSearch = async () => {
-    try {
-      const res = await axios.get("/api/Book/getallbypaging", {
-        params: {
-          page: 0,
-          pageSize: 100,
-          keyword: keyword,
-        },
-      });
-      // TODO: Chuyển hướng sang trang kết quả hoặc hiển thị popup, tuỳ ý bạn
-      // Hiện tại chỉ log ra console
-      console.log("Kết quả search:", res.data);
-    } catch (err) {
-      console.error("Lỗi khi search:", err);
+  // Hàm xử lý search: chuyển hướng sang trang search với query keyword
+  const handleSearch = () => {
+    if (keyword.trim()) {
+      navigate(`/search?q=${encodeURIComponent(keyword.trim())}`);
     }
   };
 
@@ -89,7 +92,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white shadow py-2 leading-[16.1px]">
+    <header className="w-full bg-white shadow py-2 leading-4">
       <div
         className="container flex items-start gap-x-12"
         style={{
@@ -126,7 +129,7 @@ const Header = () => {
         <div className="flex-1 flex flex-col gap-x-2 gap-y-2 text-[14px]">
           <div className="flex items-center justify-between h-[40px] relative z-2">
             {/* Searchbar */}
-            <div className="flex items-center bg-white border border-gray-300 rounded overflow-hidden h-10 font-inter text-[14px] leading-[16.1px] flex-grow box-border">
+            <div className="flex items-center bg-white border border-gray-200 rounded overflow-hidden h-10 font-inter text-[14px] leading-[16.1px] flex-grow box-border">
               <img
                 className="icon-search ml-3 mr-2 w-5 h-5"
                 src="/Header/IconSearch.png"
@@ -154,10 +157,10 @@ const Header = () => {
             </div>
 
             {/* Icons */}
-            <div className="ml-6 flex items-center text-gray-700">
+            <div className="ml-6 flex items-center text-gray-700 justify-end box-border">
               {/* Home */}
               <button
-                className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-100 hover:text-blue-500 cursor-pointer"
+                className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-200 cursor-pointer"
                 onClick={() => navigate("/")}
               >
                 <img
@@ -173,13 +176,14 @@ const Header = () => {
               {/* User */}
               <div
                 className="relative"
-                onMouseEnter={handleAccountMouseEnter}
-                onMouseLeave={handleAccountMouseLeave}
+                ref={hoverAreaRef}
+                onMouseOver={handleAccountMouseOver}
+                onMouseOut={handleAccountMouseOut}
               >
                 <button
                   ref={accountBtnRef}
                   onClick={handleAccountClick}
-                  className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-100 hover:text-blue-500 cursor-pointer"
+                  className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-200 cursor-pointer"
                 >
                   <img
                     src="/Header/Wrapper/Account.png"
@@ -194,14 +198,17 @@ const Header = () => {
                 {user && openDropdown && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+                    className="absolute right-0 mt-2 w-60
+         bg-white rounded-lg shadow-lg
+         py-2 z-50 cursor-pointer
+         box-border border border-[#EFEFEF]"
                   >
                     <button
                       onClick={() => {
                         navigate("customer/account");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                     >
                       Thông tin tài khoản
                     </button>
@@ -210,7 +217,7 @@ const Header = () => {
                         navigate("customer/orders");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                     >
                       Đơn hàng của tôi
                     </button>
@@ -219,17 +226,18 @@ const Header = () => {
                         navigate("/support");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                     >
                       Trung tâm hỗ trợ
                     </button>
                     <button
                       onClick={() => {
                         logout();
-                        navigate("/");
                         setOpenDropdown(false);
+                        navigate("/");
+                        setTimeout(() => window.location.reload(), 0);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                     >
                       Đăng xuất
                     </button>
@@ -250,9 +258,9 @@ const Header = () => {
               {/* Cart */}
               <button
                 onClick={() => navigate("/cart")}
-                className="relative flex items-center gap-1 p-0 rounded hover:bg-gray-100 hover:text-blue-500 cursor-pointer"
+                className="relative flex items-center gap-1 p-0 rounded"
               >
-                <div className="relative w-10 h-10 ml-6 flex items-center justify-center ">
+                <div className="relative w-10 h-10 ml-6 flex items-center justify-center hover:bg-gray-100 hover:text-blue-500 cursor-pointer">
                   <img
                     src="/Header/Wrapper/Cart.png"
                     alt="cart"
