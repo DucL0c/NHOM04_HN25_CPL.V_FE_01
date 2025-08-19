@@ -5,10 +5,10 @@ import DataService from "../../services/axiosClient";
 import { useParams, useNavigate } from "react-router-dom";
 
 interface UserDto {
-  userId: number;
-  name: string;
-  phone: string;
-  address: string;
+  userId: number
+  name: string
+  phone: string | null
+  address: string | null
 }
 
 interface BookImages {
@@ -338,7 +338,7 @@ function OrderDetail() {
       const userInfo: UserDto = {
         userId: orderData.userId,
         name: user?.name || "Không có thông tin",
-        phone: user?.phone || "không có thông tin",
+        phone: user?.phone || "08666454515",
         address: orderData.shippingAddress,
       };
 

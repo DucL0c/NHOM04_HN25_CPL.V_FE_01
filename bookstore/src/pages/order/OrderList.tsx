@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 interface UserDto {
   userId: number
   name: string
-  phone: string
-  address: string
+  phone: string | null
+  address: string | null
 }
 
 interface BookImages {
@@ -60,6 +60,7 @@ const OrderList = () => {
     "Đang giao hàng",
     "Đã giao hàng",
     "Đã huỷ",
+    "Chờ xử lý"
   ];
 
   useEffect(() => {
@@ -79,8 +80,11 @@ const OrderList = () => {
 
   const filteredOrders = orders.filter(order => {
     if (activeTab === "Tất cả đơn") return true;
-    if (activeTab === "Đã giao" && order.status === "Hoàn thành") return true;
+    if (activeTab === "Đã giao" && order.status === "") return true;
     if (activeTab === "Đã huỷ" && order.status === "Đã hủy") return true;
+    if (activeTab === "Đang giao hàng" && order.status === "Shipping") return true;
+    if (activeTab === "Đã xác nhận" && order.status === "Processing") return true;
+    if (activeTab === "Chờ xử lý" && order.status === "Pending") return true;
     
     return false;
   }).filter(order => {
@@ -106,8 +110,11 @@ const OrderList = () => {
 
   const getStatusDisplay = (status: string) => {
     switch(status) {
-      case "Hoàn thành": return "Đã giao";
-      case "Đã hủy": return "Đã huỷ";
+      case "Delivered": return "Đã giao";
+      case "Cancelled": return "Đã huỷ";
+      case "Pending":return "Chờ xử lý";
+      case "Processing":return "Đang xử lý";
+      case "Shipping":return "Đang vận chuyển";
       default: return status;
     }
   };
@@ -132,7 +139,7 @@ const OrderList = () => {
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`w-1/6 py-3 mx-4 text-center text-[#0D5CB6] hover:border-b-2 hover:border-[#0D5CB6] ${
+            className={`w-1/6 py-3 text-center text-[#0D5CB6] hover:border-b-2 hover:border-[#0D5CB6] ${
               activeTab === tab
                 ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
                 : "text-gray-500"
@@ -174,8 +181,8 @@ const OrderList = () => {
       <div className="border-b border-[#EBEBF0] pb-3 text-[#808089] text-sm font-medium leading-5">
           <span className="text-sm text-gray-600">Trạng thái:</span>
           <span className={`text-sm font-medium ml-2 ${
-            order.status === "Hoàn thành" ? "text-green-600" :
-            order.status === "Đã hủy" ? "text-red-600" : "text-orange-600"
+            order.status === "Delivered" ? "text-green-600" :
+            order.status === "Cancelled" ? "text-red-600" : "text-orange-600"
           }`}>
             {getStatusDisplay(order.status)}
           </span>

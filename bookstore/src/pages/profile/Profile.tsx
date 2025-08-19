@@ -58,41 +58,47 @@ const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: 
 
     return (
         <div className="w-[553px] p-4 pr-6 pl-4">
-            <h1 className="text-xl font-semibold text-gray-900 mb-6">Thông tin tài khoản</h1>
+            <div className="text-xl leading-8 font-light mt-1 mb-3">Thông tin tài khoản</div>
             <div className="space-y-6">
-                <h2 className="text-lg font-medium text-gray-900">Thông tin cá nhân</h2>
-                <div className="flex items-center gap-4 mb-6">
-                    <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center"><User className="w-10 h-10 text-blue-600" /></div>
+                <h2 className="text-base leading-6 font-normal text-slate-500">Thông tin cá nhân</h2>
+                <div className="flex flex-row">
+                  <div className="mr-4">
+                    <div className="bg-[#F0F8FF] rounded-full w-28 h-28 border-4 border-[#C2E1FF] relative flex justify-center items-center">
+                    <div className="cursor-pointer flex justify-center items-center"><User className="w-10 h-10 text-blue-600" /></div>
+                  </div>
+
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Họ & Tên</label>
-                        <input type="text" name="fullName" value={formData.fullName} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <div className="w-full flex justify-between flex-col">
+                    <div className="flex items-center mb-[34px]">
+                        <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Họ & Tên</label>
+                        <input type="text" name="fullName" value={formData.fullName} onChange={handleFormChange} className="h-9 w-full rounded-md py-2.5 px-3 leading-5 outline-none border border-[#c4c4cf] appearance-textfield outline-offset-[-2px]" />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Nickname</label>
-                        <input type="text" name="nickname" placeholder="Thêm nickname" value={formData.nickname} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    <div className="flex items-center mb-[34px]">
+                        <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Nickname</label>
+                        <input type="text" name="nickname" placeholder="Thêm nickname" value={formData.nickname} onChange={handleFormChange} className="h-9 w-full rounded-md py-2.5 px-3 leading-5 outline-none border border-[#c4c4cf] appearance-textfield outline-offset-[-2px]" />
                     </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Ngày sinh</label>
-                    <div className="flex flex-wrap gap-3">
-                        <select name="birthDay" value={formData.birthDay} onChange={handleFormChange} className="px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+
+                <div className="flex items-center mb-[34px]">
+                    <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Ngày sinh</label>
+                    <div className="flex flex-1 relative z-10">
+                        <select name="birthDay" value={formData.birthDay} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
                             <option value="">Ngày</option>
                             {days.map(day => <option key={day} value={day}>{day}</option>)}
                         </select>
-                        <select name="birthMonth" value={formData.birthMonth} onChange={handleFormChange} className="px-3 py-2 border border-gray-300 rounded-lg">
+                        <select name="birthMonth" value={formData.birthMonth} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
                             <option value="">Tháng</option>
                             {months.map(month => <option key={month} value={month}>{month}</option>)}
                         </select>
-                        <select name="birthYear" value={formData.birthYear} onChange={handleFormChange} className="px-3 py-2 border border-gray-300 rounded-lg">
+                        <select name="birthYear" value={formData.birthYear} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
                             <option value="">Năm</option>
                             {years.map(year => <option key={year} value={year}>{year}</option>)}
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Giới tính</label>
+                    <label className="flex items-center mb-[34px]">Giới tính</label>
                     <div className="flex flex-wrap gap-6">
                         <label className="flex items-center"><input type="radio" name="gender" value="male" checked={formData.gender === 'male'} onChange={handleFormChange} className="mr-2" /><span>Nam</span></label>
                         <label className="flex items-center"><input type="radio" name="gender" value="female" checked={formData.gender === 'female'} onChange={handleFormChange} className="mr-2" /><span>Nữ</span></label>
@@ -100,7 +106,7 @@ const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: 
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Quốc tịch</label>
+                    <label className="flex items-center mb-[34px]">Quốc tịch</label>
                     <select name="nationality" value={formData.nationality} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                         <option value="">Chọn quốc tịch</option>
                         {nationalities.map(nat => <option key={nat} value={nat}>{nat}</option>)}
