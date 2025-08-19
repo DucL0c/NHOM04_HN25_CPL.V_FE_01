@@ -11,7 +11,7 @@ function App() {
     <>
       <Toaster position="top-right" />
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Loading....</div>}>
           <CartCountProvider>
             <AppRoutes />
           </CartCountProvider>
