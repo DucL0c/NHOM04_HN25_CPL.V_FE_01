@@ -1,8 +1,11 @@
 "use client";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronRight, X } from "lucide-react";
+import axiosClient from "../../services/axiosClient";
+import ToastService from "../../services/notificationService";
+import { useAuth } from "../../hooks/useAuth";
 
 type CheckoutItem = {
   id: string;
@@ -11,7 +14,31 @@ type CheckoutItem = {
   image?: string;
   seller?: string;
 };
-type CheckoutState = { item: CheckoutItem; quantity: number };
+type ItemWithQty = { item: CheckoutItem; quantity: number };
+
+type CheckoutState =
+  | { item: CheckoutItem; quantity: number }
+  | { items: ItemWithQty[] }
+  | (Partial<{ item: CheckoutItem; quantity: number; items: ItemWithQty[] }> & {
+      shipId?: "express" | "economy";
+      payId?: "cod" | "viettel";
+      chosenPromo?: string | null;
+      applyShipDiscount?: boolean;
+    });
+
+type ApiUser = {
+  userId: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+};
+
+type UiAddress = {
+  name: string;   // người nhận
+  phone: string;  // SĐT nhận hàng
+  detail: string; // địa chỉ giao
+};
 
 const SHIPPING_METHODS = [
   { id: "express", name: "Giao siêu tốc 2h", fee: 25000, note: "-25K", badge: "NOW" },
@@ -38,6 +65,7 @@ const CARD_PROMOS = [
   { id: "freeship-tiki", title: "Freeship", sub: "TikiCARD", bank: "TikiCARD", available: false, special: true },
 ] as const;
 
+// ===== helpers =====
 function toNumberVND(p: unknown): number {
   if (typeof p === "number" && !Number.isNaN(p)) return p;
   if (typeof p === "string") {
@@ -60,23 +88,77 @@ function etaTextEconomy(days = 3) {
   return `Dự kiến giao ${weekdayVi(d)}, trước 13h, ${dd}/${mm}`;
 }
 
-
 export default function Checkout() {
   const nav = useNavigate();
   const { state } = useLocation();
-  const data = state as CheckoutState | null;
+  const s = (state || {}) as CheckoutState;
+  const { user, accessToken } = useAuth();
 
-  const [item] = useState<CheckoutItem | null>(data?.item ?? null);
-  const [qty] = useState<number>(Math.max(1, data?.quantity ?? 1));
+  // ===== items =====
+  const items: ItemWithQty[] = useMemo(() => {
+    if (Array.isArray((s as any).items) && (s as any).items.length) {
+      return (s as any).items as ItemWithQty[];
+    }
+    if ((s as any).item) {
+      const qty = Math.max(1, (s as any).quantity ?? 1);
+      return [{ item: (s as any).item as CheckoutItem, quantity: qty }];
+    }
+    return [];
+  }, [s]);
 
-  const [shipId, setShipId] = useState<string>("express");
-  const [payId, setPayId] = useState<string>("cod");
-  const [applyShipDiscount, setApplyShipDiscount] = useState<boolean>(true);
-  const [chosenPromo, setChosenPromo] = useState<string | null>(null);
+  const [shipId, setShipId] = useState<string>((s as any).shipId ?? "express");
+  const [payId, setPayId] = useState<string>((s as any).payId ?? "cod");
+  const [applyShipDiscount, setApplyShipDiscount] = useState<boolean>(
+    (s as any).applyShipDiscount ?? true
+  );
+  const [chosenPromo, setChosenPromo] = useState<string | null>(
+    (s as any).chosenPromo ?? null
+  );
 
-  const ship = useMemo(() => SHIPPING_METHODS.find((s) => s.id === shipId), [shipId]);
-  const price = useMemo(() => toNumberVND(item?.price as any), [item]);
-  const subtotal = price * qty;
+  // ===== address state =====
+  const [apiUser, setApiUser] = useState<ApiUser | null>(null);
+  const [address, setAddress] = useState<UiAddress | null>(null);
+
+  // modal
+  const [openAddrModal, setOpenAddrModal] = useState(false);
+  const [addrMode, setAddrMode] = useState<"default" | "custom">("default");
+  const [draftAddr, setDraftAddr] = useState<UiAddress>({
+    name: user?.name || "",
+    phone: "",
+    detail: "",
+  });
+
+  // fetch user to get default address
+  useEffect(() => {
+    if (!user?.userId) return;
+    (async () => {
+      try {
+        const u = await axiosClient.get<ApiUser>(`/Users/getbyid/${user.userId}`);
+        setApiUser(u);
+        if (u.address) {
+          setAddress({
+            name: u.name || user.name || "Khách hàng",
+            phone: u.phone || "",
+            detail: u.address,
+          });
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, [user?.userId, user?.name]);
+
+  // subtotal & totals
+  const ship = useMemo(() => SHIPPING_METHODS.find((x) => x.id === shipId), [shipId]);
+
+  const subtotal = useMemo(
+    () =>
+      items.reduce(
+        (acc, it) => acc + toNumberVND(it.item.price) * Math.max(1, it.quantity),
+        0
+      ),
+    [items]
+  );
 
   const directDiscount = 59000;
   const baseShipFee = ship ? ship.fee : 0;
@@ -87,10 +169,9 @@ export default function Checkout() {
     subtotal + baseShipFee - directDiscount - (applyShipDiscount ? shipDiscount : 0)
   );
 
-  // ETA cho header "Gói: ..."
   const packageETA = shipId === "economy" ? etaTextEconomy(3) : "";
 
-  if (!item) {
+  if (!items.length) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white p-6 rounded shadow-sm text-center">
@@ -103,22 +184,99 @@ export default function Checkout() {
     );
   }
 
-  const handlePlaceOrder = () => {
-    const orderCode = Math.floor(100000000 + Math.random() * 900000000).toString();
-    const etaForConfirm = packageETA; // gửi sang confirm
-    nav("/confirm", {
-      state: {
-        items: [{ item, quantity: qty }],
-        shipId,
-        payId,
-        chosenPromo,
-        applyShipDiscount,
-        total,
-        orderCode,
-        etaText: etaForConfirm,
-      },
+  // ====== save address from modal ======
+  function saveAddressFromModal() {
+    if (addrMode === "default") {
+      if (!apiUser?.address) {
+        ToastService.error("Tài khoản chưa có địa chỉ mặc định. Vui lòng nhập địa chỉ mới.");
+        return;
+      }
+      setAddress({
+        name: apiUser.name || user?.name || "Khách hàng",
+        phone: apiUser.phone || "",
+        detail: apiUser.address,
+      });
+      setOpenAddrModal(false);
+      return;
+    }
+    // custom
+    if (!draftAddr.detail.trim()) {
+      ToastService.error("Bạn chưa nhập địa chỉ nhận hàng.");
+      return;
+    }
+    setAddress({
+      name: draftAddr.name || user?.name || "Khách hàng",
+      phone: draftAddr.phone || "",
+      detail: draftAddr.detail.trim(),
     });
-  };
+    setOpenAddrModal(false);
+  }
+
+  // ====== API: Place Order ======
+  async function handlePlaceOrder() {
+    if (!user || !accessToken) {
+      ToastService.error("Bạn cần đăng nhập để đặt hàng.");
+      nav("/auth/login");
+      return;
+    }
+
+    // Nếu chưa có địa chỉ → yêu cầu nhập
+    if (!address?.detail?.trim()) {
+      setAddrMode(apiUser?.address ? "default" : "custom");
+      setOpenAddrModal(true);
+      ToastService.error("Vui lòng chọn/nhập địa chỉ giao hàng.");
+      return;
+    }
+
+    const paymentMethod = payId === "cod" ? "COD" : "ViettelMoney";
+
+    const payload = {
+      UserId: user.userId,
+      shippingAddress: address.detail, // địa chỉ giao
+      receiverName: address.name,      // tên người nhận
+      receiverPhone: address.phone,    // SĐT (mới nếu user vừa sửa)
+      paymentMethod,
+      items: items.map((it) => ({
+        bookId: Number.parseInt(String(it.item.id), 10),
+        quantity: Math.max(1, it.quantity),
+      })),
+    };
+
+    try {
+      ToastService.loading("Đang tạo đơn hàng...");
+      const resp = await axiosClient.post("/Order/create", payload);
+      const code =
+        (resp as any)?.orderCode ||
+        (resp as any)?.orderId ||
+        Math.floor(100000000 + Math.random() * 900000000).toString();
+
+      ToastService.updateSuccess("Đặt hàng thành công!");
+
+      nav("/confirm", {
+        state: {
+          items,
+          shipId,
+          payId,
+          chosenPromo,
+          applyShipDiscount,
+          total,
+          orderCode: String(code),
+          etaText: packageETA,
+          address, // để Confirm hiển thị nếu muốn
+        },
+        replace: true,
+      });
+    } catch (err: any) {
+      console.error("Create order failed:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Đặt hàng thất bại. Vui lòng thử lại.";
+      ToastService.error(msg);
+    } finally {
+      ToastService.dismiss();
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -132,7 +290,7 @@ export default function Checkout() {
                 <div className="font-semibold text-lg">Chọn hình thức giao hàng</div>
               </div>
 
-              {/* Box 1: Options */}
+              {/* Options */}
               <div className="p-6">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 space-y-4">
                   {SHIPPING_METHODS.map((s) => {
@@ -158,7 +316,6 @@ export default function Checkout() {
                             <span className="text-green-600 font-medium">{s.note}</span>
                           </div>
                         </div>
-                        {/* ETA hint ngay dưới option khi chọn tiết kiệm */}
                         {selected && s.id === "economy" && (
                           <div className="pl-7 mt-1 text-xs text-gray-600">{etaTextEconomy(3)}</div>
                         )}
@@ -168,19 +325,17 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Box 2: Selected package like screenshot */}
+              {/* Selected package + LIST SẢN PHẨM */}
               <div className="px-6 pb-6">
                 <div className="border rounded-lg p-5 bg-white">
-                  {/* Header dòng xanh: Gói: <tên>, <ETA> */}
                   <div className="text-sm text-green-600 font-medium flex items-center gap-2 mb-3">
                     <span>📅</span>
                     <span>
                       Gói: {ship?.name}
-                      {packageETA && `, ${packageETA}`}
+                      {shipId === "economy" ? `, ${etaTextEconomy(3)}` : ""}
                     </span>
                   </div>
 
-                  {/* Line with NOW / name / price strike / FREE or fee */}
                   <div className="flex items-center gap-2 mb-3">
                     {shipId === "express" && (
                       <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">NOW</span>
@@ -198,23 +353,26 @@ export default function Checkout() {
                     )}
                   </div>
 
-                  {/* Product row */}
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={item.image || "/placeholder.svg?height=44&width=44"}
-                      className="w-11 h-11 rounded object-cover"
-                      alt={item.name}
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm line-clamp-1">{item.name}</div>
-                      <div className="text-gray-500 text-sm">SL: x{qty}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="line-through text-gray-400 text-sm">
-                        {formatVND(Math.max(0, price + 59000))}
+                  {/* === DANH SÁCH TẤT CẢ SẢN PHẨM === */}
+                  <div className="mt-3 space-y-3">
+                    {items.map((it, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <img
+                          src={it.item.image || "/placeholder.svg?height=44&width=44"}
+                          className="w-11 h-11 rounded object-cover"
+                          alt={it.item.name}
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm line-clamp-1">{it.item.name}</div>
+                          <div className="text-gray-500 text-xs">SL: x{Math.max(1, it.quantity)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-red-600 font-semibold">
+                            {formatVND(toNumberVND(it.item.price))}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-red-600 font-semibold">{formatVND(price)}</div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
@@ -225,7 +383,7 @@ export default function Checkout() {
               </div>
             </section>
 
-            {/* Payment method */}
+            {/* Payment method + Ưu đãi thẻ */}
             <section className="bg-white rounded-lg shadow-sm">
               <div className="p-6 border-b">
                 <div className="font-semibold text-lg">Chọn hình thức thanh toán</div>
@@ -252,10 +410,10 @@ export default function Checkout() {
                   </label>
                 ))}
 
-                {/* Card promotions */}
+                {/* === Ưu đãi thanh toán thẻ === */}
                 <div className="mt-8">
                   <div className="font-medium text-lg mb-4">Ưu đãi thanh toán thẻ</div>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {CARD_PROMOS.map((c) => {
                       const active = chosenPromo === c.id;
                       return (
@@ -276,7 +434,9 @@ export default function Checkout() {
                             )}
                           </div>
                           <div className="text-xs text-gray-600">{c.sub}</div>
-                          {!c.available && <div className="text-xs text-orange-600 mt-1">Không giới hạn</div>}
+                          {!c.available && (
+                            <div className="text-xs text-orange-600 mt-1">Không giới hạn</div>
+                          )}
                         </button>
                       );
                     })}
@@ -293,17 +453,38 @@ export default function Checkout() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-semibold text-lg">Giao tới</div>
-                  <div className="text-sm font-medium mt-1">Vũ Anh Tú • 0942438693</div>
-                  <div className="text-sm text-orange-600">Văn phòng</div>
+                  {/* Tên | SĐT trên cùng một hàng */}
+                  <div className="text-sm font-medium mt-1 flex items-center gap-2 flex-wrap">
+                    <span>{address?.name || user?.name || "Khách hàng"}</span>
+                    {(address?.phone || apiUser?.phone) && (
+                      <>
+                        <span className="text-gray-300">|</span>
+                        <span>{address?.phone || apiUser?.phone}</span>
+                      </>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-600 mt-1">
-                    số 17 Duy Tân, Phường Dịch Vọng, Quận Cầu Giấy, Hà Nội
+                    {address?.detail || "Chưa có địa chỉ. Vui lòng thêm địa chỉ giao hàng."}
                   </div>
                 </div>
-                <button className="text-blue-600 text-sm">Thay đổi</button>
+                <button
+                  className="text-blue-600 text-sm"
+                  onClick={() => {
+                    setAddrMode(apiUser?.address ? "default" : "custom");
+                    setDraftAddr({
+                      name: address?.name || user?.name || apiUser?.name || "",
+                      phone: address?.phone || apiUser?.phone || "",
+                      detail: address?.detail || apiUser?.address || "",
+                    });
+                    setOpenAddrModal(true);
+                  }}
+                >
+                  Thay đổi
+                </button>
               </div>
             </div>
 
-            {/* Tiki Khuyến Mãi */}
+            {/* Tiki Khuyến Mãi (phí VC + giảm trực tiếp) */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="font-semibold text-lg">Tiki Khuyến Mãi</div>
@@ -324,79 +505,57 @@ export default function Checkout() {
                     className="text-blue-600 text-sm bg-blue-100 px-3 py-1 rounded"
                     onClick={() => setApplyShipDiscount((v) => !v)}
                   >
-                    {applyShipDiscount ? "Bỏ Chọn" : "Chọn"}
+                    {applyShipDiscount ? "Bỏ chọn" : "Áp dụng"}
                   </button>
                 </div>
               </div>
 
-              <button className="text-blue-600 text-sm mt-4 flex items-center gap-1">
-                🎯 Chọn hoặc nhập mã khác
-                <ChevronRight className="w-3 h-3" />
-              </button>
+              <div className="p-4 border rounded-lg bg-blue-50 border-blue-200 mt-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                      <span className="text-white text-xs">💳</span>
+                    </div>
+                    <div className="text-sm font-medium">Giảm trực tiếp</div>
+                  </div>
+                  <div className="text-sm font-semibold text-red-600">
+                    -{formatVND(59000)}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Order summary */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="font-semibold text-lg mb-4">Đơn hàng</div>
-              <div className="text-sm text-gray-600 mb-4">
-                1 sản phẩm. <button className="text-blue-600">Xem thông tin</button>
+            {/* Summary & action */}
+            <div className="bg-white rounded-lg shadow-sm p-6 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span>Tạm tính</span>
+                <span className="font-semibold">{formatVND(subtotal)}</span>
               </div>
-
-              <div className="flex gap-3 mb-4">
-                <img
-                  src={item.image || "/placeholder.svg?height=56&width=56"}
-                  className="w-14 h-14 rounded object-cover"
-                  alt={item.name}
-                />
-                <div className="flex-1">
-                  <div className="text-sm line-clamp-2">{item.name}</div>
-                  <div className="text-xs text-gray-500">x{qty}</div>
-                </div>
-                <div className="text-sm font-medium">{formatVND(price)}</div>
+              <div className="flex items-center justify-between text-sm">
+                <span>Phí vận chuyển</span>
+                <span className="font-semibold">
+                  {applyShipDiscount ? (
+                    <>
+                      <span className="line-through mr-2 text-gray-400">{formatVND(baseShipFee)}</span>0₫
+                    </>
+                  ) : (
+                    formatVND(baseShipFee)
+                  )}
+                </span>
               </div>
-
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Tổng tiền hàng</span>
-                  <span>{formatVND(subtotal)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Phí vận chuyển</span>
-                  <span>{formatVND(baseShipFee)}</span>
-                </div>
-
-                <div className="flex justify-between text-green-600">
-                  <span>Giảm giá trực tiếp</span>
-                  <span>-{formatVND(directDiscount)}</span>
-                </div>
-
-                {applyShipDiscount && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Giảm giá vận chuyển</span>
-                    <span>-{formatVND(shipDiscount)}</span>
-                  </div>
-                )}
-
-                <div className="pt-3 mt-3 border-t">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="text-gray-600">Tổng tiền thanh toán</div>
-                      <div className="text-xs text-green-600">
-                        Tiết kiệm {formatVND(directDiscount + (applyShipDiscount ? shipDiscount : 0))}
-                      </div>
-                    </div>
-                    <div className="text-xl font-bold text-red-600">{formatVND(total)}</div>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    (Giá này đã bao gồm thuế GTGT, phí đóng gói, phí vận chuyển và các chi phí phát sinh khác)
-                  </div>
-                </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>Khuyến mãi</span>
+                <span className="font-semibold text-red-600">-{formatVND(59000)}</span>
+              </div>
+              <div className="h-px bg-gray-200 my-1" />
+              <div className="flex items-center justify-between text-base">
+                <span className="font-semibold">Tổng tiền</span>
+                <span className="text-red-600 font-bold text-lg">{formatVND(total)}</span>
               </div>
 
               <button
                 onClick={handlePlaceOrder}
-                className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium"
+                className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold"
               >
                 Đặt hàng
               </button>
@@ -404,6 +563,91 @@ export default function Checkout() {
           </aside>
         </div>
       </div>
+
+      {/* ===== Address Modal ===== */}
+      {openAddrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setOpenAddrModal(false)} />
+          <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-lg font-semibold">Địa chỉ giao hàng</div>
+              <button className="p-2" onClick={() => setOpenAddrModal(false)}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <label className="flex items-start gap-3 p-3 border rounded-lg">
+                <input
+                  type="radio"
+                  className="accent-blue-600 mt-1"
+                  checked={addrMode === "default"}
+                  onChange={() => setAddrMode("default")}
+                  disabled={!apiUser?.address}
+                />
+                <div className="flex-1">
+                  <div className="font-medium">Dùng địa chỉ mặc định</div>
+                  <div className="text-sm text-gray-600">
+                    {apiUser?.address ? apiUser.address : "Chưa có địa chỉ mặc định trong tài khoản"}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    SĐT mặc định: {apiUser?.phone || "—"}
+                  </div>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 p-3 border rounded-lg">
+                <input
+                  type="radio"
+                  className="accent-blue-600 mt-1"
+                  checked={addrMode === "custom"}
+                  onChange={() => setAddrMode("custom")}
+                />
+                <div className="flex-1">
+                  <div className="font-medium">Nhập địa chỉ khác (không lưu vào hồ sơ)</div>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Tên người nhận"
+                      className="border rounded px-3 py-2 text-sm col-span-2"
+                      value={draftAddr.name}
+                      onChange={(e) => setDraftAddr((d) => ({ ...d, name: e.target.value }))}
+                      disabled={addrMode !== "custom"}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Số điện thoại"
+                      className="border rounded px-3 py-2 text-sm col-span-2"
+                      value={draftAddr.phone}
+                      onChange={(e) => setDraftAddr((d) => ({ ...d, phone: e.target.value }))}
+                      disabled={addrMode !== "custom"}
+                    />
+                    <textarea
+                      placeholder="Địa chỉ chi tiết"
+                      className="border rounded px-3 py-2 text-sm col-span-2 min-h-[80px]"
+                      value={draftAddr.detail}
+                      onChange={(e) => setDraftAddr((d) => ({ ...d, detail: e.target.value }))}
+                      disabled={addrMode !== "custom"}
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-3">
+              <button className="px-4 py-2 rounded border" onClick={() => setOpenAddrModal(false)}>
+                Hủy
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-blue-600 text-white"
+                onClick={saveAddressFromModal}
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

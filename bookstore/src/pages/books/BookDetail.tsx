@@ -4,6 +4,8 @@ import DataService from "../../services/axiosClient";
 import ToastService from "../../services/notificationService";
 import type { BEBook, Book } from "./bookType";
 import { useAuth } from "../../hooks/useAuth";
+import Popup from "../../components/popup/Popup";
+import LoginPage from "../auth/LoginPage";
 import {
   Star,
   ShoppingCart,
@@ -77,7 +79,9 @@ const GridSkeleton = ({ count = 8 }: { count?: number }) => (
 const BookDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth()
+  const { user } = useAuth();
+
+  const [openLogin, setOpenLogin] = useState(false); // ⬅️ popup đăng nhập
 
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +99,11 @@ const BookDetail = () => {
   const [simPage, setSimPage] = useState(0);
   const TOP_PAGE_SIZE = 4; // 1 hàng x 4 cột
   const SIM_PAGE_SIZE = 8; // 2 hàng x 4 cột
-  
+
+  // đóng popup khi user đã đăng nhập
+  useEffect(() => {
+    if (user) setOpenLogin(false);
+  }, [user]);
 
   // Reset UI khi đổi route /books/:id
   useEffect(() => {
@@ -117,14 +125,12 @@ const BookDetail = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-
   useEffect(() => {
     const fetchAllBooks = async () => {
       setLoadingLists(true);
       try {
         const raw = await DataService.get<BEBook[], any>("/Book/getall");
         const mapped = (raw ?? []).map(mapBEToFE);
-        console.log("[BookDetail] Loaded all books:", mapped);
         setAllBooks(mapped);
       } catch (e) {
         setAllBooks([]);
@@ -149,25 +155,36 @@ const BookDetail = () => {
 
   const handleQuantityChange = (delta: number) => setQuantity((prev) => Math.max(1, prev + delta));
 
-  const handleAddToCart = () => {
+  const ensureLoggedIn = () => {
+    if (!user) {
+      // chưa đăng nhập: mở popup đăng nhập giống Header
+      setOpenLogin(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddToCart = async () => {
     if (!book) return;
-    DataService.post("/Cart/create", {
-      UserId: user?.userId,
-      BookId: book.id,
-      Quantity: quantity,
-    })
-      .then(() => {
-        ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
-      })
-      .catch((err) => {
-        console.error("Add to cart failed:", err);
-        ToastService.error("Thêm vào giỏ hàng thất bại");
+    if (!ensureLoggedIn()) return;
+
+    try {
+      await DataService.post("/Cart/create", {
+        UserId: user?.userId,
+        BookId: book.id,
+        Quantity: quantity,
       });
-    //ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+      ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
+      ToastService.error("Thêm vào giỏ hàng thất bại");
+    }
   };
 
   const handleBuyNow = () => {
     if (!book) return;
+    if (!ensureLoggedIn()) return;
+
     navigate("/checkout", {
       state: {
         item: {
@@ -388,10 +405,16 @@ const BookDetail = () => {
                 <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 py-2 rounded text-sm font-medium">
                   Mua trước trả sau
                 </button>
+
+                {/* Gợi ý đăng nhập (tuỳ chọn hiển thị) */}
+                {!user && (
+                  <div className="text-xs text-gray-600 text-center pt-1">
+                    Bạn cần <button className="text-blue-600 hover:underline" onClick={() => setOpenLogin(true)}>đăng nhập</button> để mua hàng / thêm vào giỏ
+                  </div>
+                )}
               </div>
             </div>
           </div>
-
 
           {/* Col 2: Main info + lists */}
           <div className="lg:col-span-5 order-3 lg:order-2">
@@ -728,6 +751,16 @@ const BookDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Đăng nhập — giống Header */}
+      <Popup
+        open={openLogin}
+        onClose={() => setOpenLogin(false)}
+        width={768}
+        className="rounded-2xl overflow-hidden bg-white shadow-2xl"
+      >
+        <LoginPage onSuccess={() => setOpenLogin(false)} />
+      </Popup>
     </div>
   );
 };
