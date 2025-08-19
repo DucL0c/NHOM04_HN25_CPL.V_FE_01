@@ -132,6 +132,36 @@ const Cart: React.FC = () => {
     );
   };
 
+    //  gửi danh sách đã chọn sang Checkout
+  const handleCheckoutSelected = () => {
+    if (!selectedItems.length) return;
+
+    const items = selectedItems.map((ci) => ({
+      item: {
+        id: String(ci.bookId),
+        name: ci.book.name,
+        // ưu tiên giá của cửa hàng tốt nhất, fallback về book.price
+        price: ci.book.bookSellers?.[0]?.price ?? ci.book.price,
+        image:
+          ci.book.bookImages?.[0]?.thumbnailUrl ||
+          ci.book.bookImages?.[0]?.smallUrl ||
+          ci.book.bookImages?.[0]?.baseUrl ||
+          "",
+        seller: ci.book.bookSellers?.[0]?.seller?.name || "Tiki",
+      },
+      quantity: ci.quantity,
+    }));
+
+    navigate("/checkout", {
+      state: {
+        items, // <-- danh sách gửi sang Checkout
+        // có thể set sẵn các mặc định, optional:
+        shipId: "express",
+        payId: "cod",
+      },
+    });
+  };
+
   if ((!cart || cart.cartItems.length === 0) && loading == false) {
     return (
       <main className="container mx-auto px-8 py-4">
@@ -279,7 +309,7 @@ const Cart: React.FC = () => {
               </ul>
 
               <div className="bg-white p-4 border-t border-gray-200 rounded">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center mb-3">
                   <span className="font-semibold">Tổng tiền thanh toán</span>
                   <div className="text-right">
                     {selectedCount === 0 ? (
@@ -288,32 +318,27 @@ const Cart: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        <div className="text-red-500 font-bold text-lg">
+                        <div className="text-lg font-bold">
                           {selectedTotal.toLocaleString("vi-VN")}đ
                         </div>
-                        <div className="text-xs text-gray-500">
-                          Tiết kiệm{" "}
-                          {selectedPriceDiscount.toLocaleString("vi-VN")}đ
+                        <div className="text-sm text-gray-500">
+                          ({selectedCount} sản phẩm)
                         </div>
                       </>
                     )}
-                    <span className="text-xs text-gray-400">
-                      (Đã bao gồm VAT nếu có)
-                    </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-white px-4 pb-4">
                 <button
-                  className="mt-4 w-full bg-red-500 text-white py-2 rounded font-semibold cursor-pointer hover:bg-red-400"
-                  onClick={() => {
-                    navigate("/checkout", {
-                      state: { selectedItems: checkedItems },
-                    });
-                  }}
+                  onClick={handleCheckoutSelected}
+                  disabled={selectedCount === 0}
+                  className={`w-full py-2 rounded text-white font-semibold ${
+                    selectedCount === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-600"
+                  }`}
                 >
-                  Mua Hàng ({selectedCount})
+                  Mua hàng
                 </button>
               </div>
             </div>

@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getBookById } from "../../services/bookService";
 import DataService from "../../services/axiosClient";
 import ToastService from "../../services/notificationService";
+import type { BEBook, Book } from "./bookType";
+import { useAuth } from "../../hooks/useAuth";
+import Popup from "../../components/popup/Popup";
+import LoginPage from "../auth/LoginPage";
 import {
   Star,
   ShoppingCart,
@@ -15,90 +18,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useCartCount } from "../../contexts/CartCountContext";
-import { useAuth } from "../../hooks/useAuth";
-
-interface FEReviewUser {
-  id: number;
-  name: string;
-  nickName?: string;
-}
-interface FEReview {
-  id: number;
-  rating: number;
-  comment: string;
-  date: string;
-  user: FEReviewUser;
-}
-interface FESpecRow {
-  name: string;
-  value: string;
-}
-interface FEImage {
-  base_url: string;
-  large_url: string;
-  medium_url: string;
-  thumbnail_url: string;
-}
-interface FESeller {
-  id: number;
-  name: string;
-  logo: string;
-  price: number;
-  sku: string;
-}
-interface FEAuthor {
-  id: number;
-  name: string;
-  slug: string;
-}
-interface FECategory {
-  id: number;
-  name: string;
-  is_leaf?: boolean;
-}
-interface Book {
-  id: string;
-  name: string;
-  authors: FEAuthor[];
-  images: FEImage[];
-  description: string;
-  short_description: string;
-  list_price: number;
-  original_price: number;
-  current_seller: FESeller;
-  rating_average: number;
-  quantity_sold: { text: string; value: number };
-  categories: FECategory;
-  specifications: FESpecRow[];
-  reviews?: FEReview[];
-}
-
-/** ===== BE type + mapper (dùng cho getall) ===== */
-type BEBook = {
-  bookId: number;
-  name: string;
-  description: string;
-  shortDescription: string;
-  ratingAverage: number;
-  originalPrice: number;
-  listPrice: number;
-  quantitySold?: { value: number; text: string };
-  bookAuthors?: Array<{ author: { authorId: number; name: string; slug?: string | null } }>;
-  bookImages?: Array<{
-    baseUrl?: string | null; smallUrl?: string | null; mediumUrl?: string | null;
-    largeUrl?: string | null; thumbnailUrl?: string | null;
-  }>;
-  bookSellers?: Array<{
-    id?: number; sku?: string; price?: number; isBestStore?: boolean;
-    seller?: { sellerId: number; name: string; logo?: string | null };
-  }>;
-  bookSpecifications?: Array<{ id: number; specName: string; specValue: string }>;
-  productReviews?: Array<{
-    reviewId: number; rating: number; comment: string; reviewDate: string;
-    user: { userId: number; fullName: string; nickName?: string | null };
-  }>;
-  category?: { categoryId: number; name: string; isLeaf?: boolean };
-};
 
 const mapBEToFE = (b: BEBook): Book => {
   const best = b.bookSellers?.find((s) => s.isBestStore) || b.bookSellers?.[0];
@@ -164,6 +83,8 @@ const BookDetail = () => {
   const { user } = useAuth();
   const { refreshCartCount } = useCartCount();  
 
+  const [openLogin, setOpenLogin] = useState(false); // ⬅️ popup đăng nhập
+
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -180,7 +101,11 @@ const BookDetail = () => {
   const [simPage, setSimPage] = useState(0);
   const TOP_PAGE_SIZE = 4; // 1 hàng x 4 cột
   const SIM_PAGE_SIZE = 8; // 2 hàng x 4 cột
-  
+
+  // đóng popup khi user đã đăng nhập
+  useEffect(() => {
+    if (user) setOpenLogin(false);
+  }, [user]);
 
   // Reset UI khi đổi route /books/:id
   useEffect(() => {
@@ -196,12 +121,11 @@ const BookDetail = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    getBookById(id)
-      .then((data) => setBook(data as unknown as Book))
+    DataService.get<BEBook, any>(`/Book/byId/${id}`)
+      .then((raw) => setBook(mapBEToFE(raw)))
       .catch(() => ToastService.error("Lỗi khi tải thông tin sách"))
       .finally(() => setLoading(false));
   }, [id]);
-
 
   useEffect(() => {
     const fetchAllBooks = async () => {
@@ -209,7 +133,6 @@ const BookDetail = () => {
       try {
         const raw = await DataService.get<BEBook[], any>("/Book/getall");
         const mapped = (raw ?? []).map(mapBEToFE);
-        console.log("[BookDetail] Loaded all books:", mapped);
         setAllBooks(mapped);
       } catch (e) {
         setAllBooks([]);
@@ -234,27 +157,40 @@ const BookDetail = () => {
 
   const handleQuantityChange = (delta: number) => setQuantity((prev) => Math.max(1, prev + delta));
 
-  const handleAddToCart = () => {
+  const ensureLoggedIn = () => {
+    if (!user) {
+      // chưa đăng nhập: mở popup đăng nhập giống Header
+      setOpenLogin(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddToCart = async () => {
     if (!book) return;
-    DataService.post("/Cart/create", {
-      UserId: user?.userId,
-      BookId: book.id,
-      Quantity: quantity,
-    })
-      .then(() => {
+    if (!ensureLoggedIn()) return;
+
+    try {
+      await DataService.post("/Cart/create", {
+        UserId: user?.userId,
+        BookId: book.id,
+        Quantity: quantity,
+      }).then(() => {
         ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
         // Refresh cart count
         refreshCartCount();
-      })
-      .catch((err) => {
-        console.error("Add to cart failed:", err);
-        ToastService.error("Thêm vào giỏ hàng thất bại");
       });
-    //ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+      ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
+      ToastService.error("Thêm vào giỏ hàng thất bại");
+    }
   };
 
   const handleBuyNow = () => {
     if (!book) return;
+    if (!ensureLoggedIn()) return;
+
     navigate("/checkout", {
       state: {
         item: {
@@ -368,7 +304,7 @@ const BookDetail = () => {
   /** ===== UI ===== */
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="max-w-[1550px] mx-auto p-6">
+      <div className="max-w-[1500px] mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Col 1: Images */}
           <div className="lg:col-span-4 lg:sticky lg:top-[30px] self-start">
@@ -376,7 +312,7 @@ const BookDetail = () => {
               <img
                 src={book.images[selectedImageIndex]?.large_url || "/placeholder.svg?height=400&width=300"}
                 alt={book.name}
-                className="w-full h-[480px] object-contain rounded-lg bg-white mb-4"
+                className="w-full h-[400px] object-contain rounded-lg bg-white mb-4"
               />
 
               <div className="flex gap-2 mb-4">
@@ -403,15 +339,29 @@ const BookDetail = () => {
           {/* Col 3: Purchase */}
           <div className="lg:col-span-3 lg:sticky lg:top-[30px] order-2 lg:order-3 self-start">
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              {/* Header: logo Tiki + OFFICIAL */}
               <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-blue-600 font-bold text-lg">Tiki</span>
-                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">OFFICIAL</span>
+                <div className="flex items-start gap-2">
+                  <img
+                    src="/images/tiki.png"
+                    alt="Tiki"
+                    className="h-5 w-auto object-contain mt-[2px]"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900 leading-none">
+                      Tiki Trading
+                    </span>
+                    <img
+                      src="/images/logo_official.png"
+                      alt="Official"
+                      className="h-4 w-auto object-contain mt-1"
+                    />
                   </div>
                 </div>
+                <div className="mt-3 h-px bg-gray-200" />
               </div>
 
+              {/* Quantity */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Số Lượng</label>
                 <div className="flex items-center border rounded w-24">
@@ -435,6 +385,7 @@ const BookDetail = () => {
                 </div>
               </div>
 
+              {/* Subtotal */}
               <div className="mb-4">
                 <div className="text-sm text-gray-600 mb-1">Tạm tính</div>
                 <div className="text-xl font-bold text-black">
@@ -442,6 +393,7 @@ const BookDetail = () => {
                 </div>
               </div>
 
+              {/* Actions */}
               <div className="space-y-2">
                 <button
                   onClick={handleBuyNow}
@@ -459,6 +411,13 @@ const BookDetail = () => {
                 <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 py-2 rounded text-sm font-medium">
                   Mua trước trả sau
                 </button>
+
+                {/* Gợi ý đăng nhập (tuỳ chọn hiển thị) */}
+                {!user && (
+                  <div className="text-xs text-gray-600 text-center pt-1">
+                    Bạn cần <button className="text-blue-600 hover:underline" onClick={() => setOpenLogin(true)}>đăng nhập</button> để mua hàng / thêm vào giỏ
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -798,6 +757,16 @@ const BookDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Đăng nhập — giống Header */}
+      <Popup
+        open={openLogin}
+        onClose={() => setOpenLogin(false)}
+        width={768}
+        className="rounded-2xl overflow-hidden bg-white shadow-2xl"
+      >
+        <LoginPage onSuccess={() => setOpenLogin(false)} />
+      </Popup>
     </div>
   );
 };
