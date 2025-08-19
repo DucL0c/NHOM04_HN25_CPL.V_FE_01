@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LoginPage from "../pages/auth/LoginPage";
 import Popup from "../components/popup/Popup";
 import { useAuth } from "../hooks/useAuth";
@@ -11,6 +11,7 @@ const Header = () => {
   const [keyword, setKeyword] = useState("");
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const accountBtnRef = useRef<HTMLButtonElement>(null);
@@ -92,14 +93,24 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white shadow py-2 leading-4">
+    <header className="w-full bg-white shadow leading-4">
+      <div className="flex items-center justify-center relative cursor-pointer bg-[#EFFFF4] text-sm px-4 py-3 gap-1">
+        <div className="align-middle text-[#00AB56] font-semibold leading-4">
+          Freeship đơn từ 45k, giảm nhiều hơn cùng
+        </div>
+        <img
+          src="/Header/FreeShipImg.png"
+          alt="Freeship"
+          width={79}
+          height={16}
+        />
+      </div>
       <div
         className="container flex items-start gap-x-12"
         style={{
           width: 1440,
-          height: 72,
           margin: "0px 220px",
-          padding: "0px 24px",
+          padding: "8px 24px",
         }}
       >
         {/* Logo */}
@@ -160,11 +171,19 @@ const Header = () => {
             <div className="ml-6 flex items-center text-gray-700 justify-end box-border">
               {/* Home */}
               <button
-                className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-200 cursor-pointer"
+                className={`flex items-center gap-1 px-4 py-2 rounded ${
+                  pathname === "/" ? "hover:bg-blue-300" : "hover:bg-gray-200"
+                } cursor-pointer ${
+                  pathname === "/" ? "text-blue-600" : "text-gray-500"
+                }`}
                 onClick={() => navigate("/")}
               >
                 <img
-                  src="/Header/Wrapper/Home.png"
+                  src={
+                    pathname === "/"
+                      ? "/Header/Wrapper/HomeBlue.png"
+                      : "/Header/Wrapper/Home.png"
+                  }
                   alt="home"
                   width={24}
                   height={24}
@@ -183,10 +202,22 @@ const Header = () => {
                 <button
                   ref={accountBtnRef}
                   onClick={handleAccountClick}
-                  className="flex items-center gap-1 px-4 py-2 rounded hover:bg-gray-200 cursor-pointer"
+                  className={`flex items-center gap-1 px-4 py-2 rounded ${
+                    pathname === "/customer/account"
+                      ? "hover:bg-blue-300"
+                      : "hover:bg-gray-200"
+                  } cursor-pointer ${
+                    pathname === "/customer/account"
+                      ? "text-blue-600"
+                      : "text-gray-500"
+                  }`}
                 >
                   <img
-                    src="/Header/Wrapper/Account.png"
+                    src={
+                      pathname === "/customer/account"
+                        ? "/Header/Wrapper/AccountBlue.png"
+                        : "/Header/Wrapper/Account.png"
+                    }
                     alt="account"
                     width={24}
                     height={24}
@@ -198,10 +229,7 @@ const Header = () => {
                 {user && openDropdown && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-0 mt-2 w-60
-         bg-white rounded-lg shadow-lg
-         py-2 z-50 cursor-pointer
-         box-border border border-[#EFEFEF]"
+                    className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg py-2 z-50 cursor-pointer box-border border border-[#EFEFEF]"
                   >
                     <button
                       onClick={() => {
@@ -290,6 +318,22 @@ const Header = () => {
           </div>
         </div>
       </div>
+      {pathname === "/" && (
+        <div className="w-full flex items-center py-2 box-border border-t border-gray-200">
+          <div
+            className="container flex items-center bg-transparent text-blue-600 cursor-pointer text-sm leading-4 no-underline decoration-blue-600"
+            style={{
+              width: 1440,
+              margin: "0px 220px",
+              padding: "0px 24px",
+            }}
+          >
+            <span className=" block box-border text-sm font-semibold text-blue-900 whitespace-nowrap leading-5">
+              Cam Kết
+            </span>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
