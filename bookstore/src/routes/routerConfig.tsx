@@ -57,7 +57,7 @@ export const routes = [
           element: <OrderList />,
         },
         {
-          path: "order-detail/:orderItemId",
+          path: "order-detail/:orderId",
           element: <OrderDetail />,
         },
       ],

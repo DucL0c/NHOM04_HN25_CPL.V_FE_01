@@ -32,7 +32,6 @@ interface UserData {
   createdAt: string | null;
 }
 
-// --- Reusable View Container ---
 const ViewContainer = ({ title, children }: { title: string, children: React.ReactNode }) => (
     <div className="flex-1">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">{title}</h1>
@@ -42,7 +41,7 @@ const ViewContainer = ({ title, children }: { title: string, children: React.Rea
     </div>
 );
 
-// --- Personal Info View Component ---
+
 const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: {
   formData: any,
   handleFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void,
