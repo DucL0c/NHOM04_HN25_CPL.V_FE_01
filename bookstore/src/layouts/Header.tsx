@@ -261,9 +261,10 @@ const Header = () => {
                     <button
                       onClick={() => {
                         logout();
-                        setOpenDropdown(false);
                         navigate("/");
-                        setTimeout(() => window.location.reload(), 0);
+                        setOpenDropdown(false);
+                        
+                        // setTimeout(() => window.location.reload(), 0);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                     >

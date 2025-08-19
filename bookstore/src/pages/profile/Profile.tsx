@@ -32,7 +32,6 @@ interface UserData {
   createdAt: string | null;
 }
 
-// --- Reusable View Container ---
 const ViewContainer = ({ title, children }: { title: string, children: React.ReactNode }) => (
     <div className="flex-1">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">{title}</h1>
@@ -42,7 +41,7 @@ const ViewContainer = ({ title, children }: { title: string, children: React.Rea
     </div>
 );
 
-// --- Personal Info View Component ---
+
 const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: {
   formData: any,
   handleFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void,
@@ -58,7 +57,7 @@ const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: 
     ];
 
     return (
-        <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
+        <div className="w-[553px] p-4 pr-6 pl-4">
             <h1 className="text-xl font-semibold text-gray-900 mb-6">Thông tin tài khoản</h1>
             <div className="space-y-6">
                 <h2 className="text-lg font-medium text-gray-900">Thông tin cá nhân</h2>
@@ -667,7 +666,7 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
   };
 
   const RightSidebar = () => (
-    <div className="w-full lg:w-80 space-y-6">
+    <div className="w-[calc(100%-553px)] p-4 pl-6 flex flex-col">
         <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="font-medium text-gray-900 mb-4">Số điện thoại và Email</h3>
             <div className="space-y-4">
@@ -743,7 +742,7 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
         </div>
       )}
       
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-nowrap justify-between bg-white rounded-lg">
         <div className="lg:col-span-1">
             {/* <div className="bg-white rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-6">

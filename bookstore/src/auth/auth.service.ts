@@ -10,6 +10,7 @@ export const AuthService = {
       name: data.user.name,
       email: data.user.email,
       role: data.user.role,
+      phone:data.user.phone
     };
     authStore.getState().setAuth(user, data.accessToken, data.refreshToken);
     return user;
