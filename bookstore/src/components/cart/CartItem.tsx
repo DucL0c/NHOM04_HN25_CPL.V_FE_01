@@ -1,6 +1,7 @@
 import type { CartItemProps } from "../../pages/cart/Cart";
 import axiosClient from "../../services/axiosClient";
 import React, { useState } from "react";
+import { useCartCount } from "../../contexts/CartCountContext";
 
 interface CartItemComponentProps extends CartItemProps {
   cartId: number;
@@ -13,6 +14,7 @@ interface CartItemComponentProps extends CartItemProps {
 const CartItem: React.FC<CartItemComponentProps> = (item) => {
   const [quantity, setQuantity] = useState(item.quantity);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { refreshCartCount } = useCartCount();
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("vi-VN").format(price);
@@ -32,6 +34,7 @@ const CartItem: React.FC<CartItemComponentProps> = (item) => {
       });
       setQuantity(newQuantity);
       item.onUpdate && item.onUpdate();
+      refreshCartCount();
     } catch (error) {
       console.error("Update quantity failed", error);
     }
@@ -42,6 +45,7 @@ const CartItem: React.FC<CartItemComponentProps> = (item) => {
       await axiosClient.delete(`/CartItem/delete/${item.cartItemId}`);
       item.onDelete && item.onDelete();
       setShowDeleteModal(false);
+      refreshCartCount();
     } catch (error) {
       console.error("Delete item failed", error);
     }
