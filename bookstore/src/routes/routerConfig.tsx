@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { Children, lazy } from "react";
 
 const Home = lazy(() => import("../pages/home"));
 const BookDetail = lazy(() => import("../pages/books/BookDetail"));
@@ -9,7 +9,7 @@ const MainLayout = lazy(() => import("../layouts/MainLayout"));
 const UserProfile = lazy(() => import("../pages/profile/Profile"));
 const Checkout = lazy(() => import("../pages/order/Checkout"));
 const Confirm = lazy(() => import("../pages/order/Comfirm"));
-
+const OrderDetail = lazy(() => import("../pages/order/Orderdetail"));
 export const routes = [
   {
     path: "/",
@@ -55,6 +55,10 @@ export const routes = [
         {
           path: "orders",
           element: <OrderList />,
+        },
+        {
+          path: "order-detail/:orderItemId",
+          element: <OrderDetail />,
         },
       ],
     }

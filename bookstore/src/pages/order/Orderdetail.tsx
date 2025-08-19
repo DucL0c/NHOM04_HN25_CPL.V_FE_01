@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { ChevronLeft, User, Bell, Package } from "lucide-react"
 import { useAuth } from "../../hooks/useAuth"
 import DataService from "../../services/axiosClient"
+import { useParams, useNavigate } from "react-router-dom" 
 
 
 interface UserDto {
@@ -42,6 +43,7 @@ const ORDER_STATUSES = [
   { value: "Hoàn thành", label: "Hoàn thành", color: "bg-green-100 text-green-800", canCancel: false },
   { value: "Đã hủy", label: "Đã hủy", color: "bg-red-100 text-red-800", canCancel: false },
 ]
+
 
 const getStatusConfig = (status: string) =>
   ORDER_STATUSES.find((s) => s.value === status) || ORDER_STATUSES[0]
@@ -162,7 +164,6 @@ const SingleOrderDetailView = ({ order, onCancel }: { order: Order; onCancel: (i
       </table>
     </div>
 
-    {/* Summary */}
     <div className="px-6 pb-6">
       <OrderSummary order={order} onCancel={onCancel} />
     </div>
@@ -170,34 +171,53 @@ const SingleOrderDetailView = ({ order, onCancel }: { order: Order; onCancel: (i
 )
 
 function OrderDetail() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
-
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
-  const fetchOrders = async () => {
-    try {
-      const res = await DataService.get<Order[], any>(`/Order/byUserId/${user?.userId}`)
-      setOrders(res)
-    } catch {
-      setError("Không tải được đơn hàng")
-    } finally {
-      setLoading(false)
-    }
+  const navigate = useNavigate() 
+  const { orderItemId } = useParams<{ orderItemId: string }>();
+useEffect(() => {
+  if (orderItemId) {
+    fetchOrderDetail(orderItemId);
+  } else {
+    setError("Không tìm thấy mã đơn hàng.");
+    setLoading(false);
   }
+}, [orderItemId]);
 
-  const handleCancelOrder = async (orderId: number) => {
-    try {
-      await DataService.post(`/orders/${orderId}/cancel`, {})
-      setOrders((prev) => prev.map((o) => (o.orderId === orderId ? { ...o, status: "Đã hủy" } : o)))
-    } catch {
-      console.error("Không thể hủy đơn hàng")
+const fetchOrderDetail = async (id: string) => {
+  setLoading(true);
+  try {
+    const res = await DataService.get<any>(`/Order/orderItem/${id}`);
+
+    const foundOrder = res.data.items.find((o: Order) =>
+      o.orderItems.some((item: any) => item.orderItemId === Number(id))
+    );
+
+    if (!foundOrder) {
+      setError("Không tìm thấy đơn hàng.");
+    } else {
+      // Lưu toàn bộ đối tượng đơn hàng đã tìm thấy vào state
+      setOrder(foundOrder);
     }
+  } catch {
+    setError("Không tải được chi tiết đơn hàng");
+  } finally {
+    setLoading(false);
   }
+};
+  const handleCancelOrder = async (id: number) => {
+    try {
+      await DataService.post(`/orders/${id}/cancel`, {});
+      // Cập nhật lại state của đơn hàng hiện tại
+      if (order) {
+        setOrder({ ...order, status: "Đã hủy" });
+      }
+    } catch {
+      console.error("Không thể hủy đơn hàng");
+    }
+  };
 
   if (loading) return <div className="p-6">Đang tải...</div>
   if (error) return <div className="p-6 text-red-500">{error}</div>
@@ -206,40 +226,12 @@ function OrderDetail() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          {/* <aside className="bg-white rounded-lg p-4">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">Tài khoản của</div>
-                <div className="font-semibold text-gray-800">{user?.name || "Người dùng"}</div>
-              </div>
-            </div>
-            <nav className="space-y-1">
-              <div className="flex items-center space-x-3 text-sm text-gray-600 p-3 hover:bg-gray-50 rounded cursor-pointer">
-                <User className="w-4 h-4" />
-                <span>Thông tin tài khoản</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm text-gray-600 p-3 hover:bg-gray-50 rounded cursor-pointer">
-                <Bell className="w-4 h-4" />
-                <span>Thông báo của tôi</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm font-medium text-gray-800 p-3 bg-gray-100 rounded">
-                <Package className="w-4 h-4" />
-                <span>Quản lý đơn hàng</span>
-              </div>
-            </nav>
-          </aside> */}
-
-          {/* Main */}
           <main className="lg:col-span-3">
-            {orders.length > 0 ? (
-              <SingleOrderDetailView order={orders[0]} onCancel={handleCancelOrder} />
+            {order ? (
+              <SingleOrderDetailView order={order} onCancel={handleCancelOrder} />
             ) : (
               <div className="bg-white rounded-lg p-8 text-center text-gray-500">
-                Không có đơn hàng nào
+                Không tìm thấy thông tin đơn hàng.
               </div>
             )}
           </main>
