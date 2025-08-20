@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, User, Bell, Package } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
+import { ChevronLeft } from "lucide-react";
 import DataService from "../../services/axiosClient";
 import { useParams, useNavigate } from "react-router-dom";
+import ToastService from "../../services/notificationService";
 
 interface UserDto {
   userId: number;
@@ -48,31 +48,31 @@ interface Order {
 
 const ORDER_STATUSES = [
   {
-    value: "Pending",
-    label: "Chờ xử lý",
+    value: "pending",
+    label: "Chờ xác nhận",
     color: "bg-yellow-100 text-yellow-800",
     canCancel: true,
   },
   {
-    value: "Processing",
-    label: "Đang xử lý",
+    value: "confirmed",
+    label: "Đã xác nhận",
     color: "bg-blue-100 text-blue-800",
     canCancel: true,
   },
   {
-    value: "Shipping",
-    label: "Đang vận chuyển",
-    color: "bg-yellow-200 text-yellow-900",
+    value: "shipping",
+    label: "Đang giao hàng",
+    color: "bg-orange-200 text-orange-900",
     canCancel: false,
   },
   {
-    value: "Delivered",
-    label: "Hoàn thành",
+    value: "delivered",
+    label: "Đã giao hàng",
     color: "bg-green-100 text-green-800",
     canCancel: false,
   },
   {
-    value: "Cancelled",
+    value: "cancelled",
     label: "Đã hủy",
     color: "bg-red-100 text-red-800",
     canCancel: false,
@@ -181,13 +181,21 @@ const OrderItemRow = ({ item }: { item: OrderItem }) => (
 
 const OrderSummary = ({
   order,
-  onCancel,
 }: {
   order: Order;
   onCancel: (id: number) => void;
 }) => {
+  const navigate = useNavigate();
   const statusConfig = getStatusConfig(order.status);
-
+  const handleCancelOrder = async (OrderId: number, userId: number, orderDate: string, totalAmount: number, shippingAddress: string, paymentMethod: string) => {
+    const confirmed = window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?");
+    if (!confirmed) return;
+    const res = await DataService.put("Order/Update", { OrderId, userId, orderDate, totalAmount, shippingAddress, paymentMethod, status: "cancelled" });
+    if (res) {
+      ToastService.success("Đơn hàng đã được hủy thành công");
+      navigate("/customer/orders");
+    }
+  };
   return (
     <div className="flex justify-end">
       <div className="w-80 space-y-2 text-sm">
@@ -201,7 +209,7 @@ const OrderSummary = ({
         </div>
         {statusConfig.canCancel && (
           <button
-            onClick={() => onCancel(order.orderId)}
+            onClick={() => handleCancelOrder(order.orderId, order.user.userId, order.orderDate, order.totalAmount,order.shippingAddress, order.paymentMethod)}
             className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded mt-4"
           >
             Hủy đơn hàng
@@ -300,7 +308,6 @@ function OrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
   const navigate = useNavigate();
   const { orderId } = useParams<{ orderId: string }>();
 
@@ -316,58 +323,10 @@ function OrderDetail() {
   const fetchOrderDetail = async (orderId: string) => {
     setLoading(true);
     try {
-      const response = await DataService.get<any>(`/OrderItem/byOrderId/${orderId}`);
+      const response = await DataService.get<Order[],any>(`/Order/byId/${orderId}`);
 
-      console.log("API Response:", response);
-      const orderItemsData = response.data || response;
-
-      if (!orderItemsData || orderItemsData.length === 0) {
-        setError("Không tìm thấy thông tin đơn hàng.");
-        return;
-      }
-
-      const firstOrderItem = orderItemsData[0];
-
-      if (!firstOrderItem || !firstOrderItem.order) {
-        setError("Dữ liệu đơn hàng không hợp lệ.");
-        return;
-      }
-
-      const orderData = firstOrderItem.order;
-
-      const userInfo: UserDto = {
-        userId: orderData.userId,
-        name: user?.name || "Không có thông tin",
-        phone: user?.phone || "không có thông tin",
-        address: orderData.shippingAddress,
-      };
-
-      const completeOrder: Order = {
-        orderId: orderData.orderId,
-        orderDate: orderData.orderDate,
-        totalAmount: orderData.totalAmount,
-        status: orderData.status,
-        shippingAddress: orderData.shippingAddress,
-        paymentMethod: orderData.paymentMethod,
-        user: userInfo,
-        orderItems: orderItemsData.map((orderItem: any) => ({
-          orderItemId: orderItem.orderItemId,
-          quantity: orderItem.quantity,
-          price: orderItem.price,
-          book: {
-            bookId: orderItem.book.bookId,
-            name: orderItem.book.name,
-            price:
-              orderItem.book.originalPrice ||
-              orderItem.book.listPrice ||
-              orderItem.book.price ||
-              orderItem.price,
-            bookImages: orderItem.book.bookImages || [],
-          },
-        })),
-      };
-
-      setOrder(completeOrder);
+      const orderItemsData = response;
+      setOrder(orderItemsData[0]);
     } catch (error) {
       console.error("Error fetching order detail:", error);
       setError("Không thể tải chi tiết đơn hàng");

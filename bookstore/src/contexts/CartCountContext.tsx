@@ -25,7 +25,7 @@ export const CartCountProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       return;
     }
     try {
-      const data = await axiosClient.get<CartProps[], any>(`/Cart/ByUserId/${user.userId}`);
+      const data = await axiosClient.get<CartProps[], any>(`/Cart/byUserId/${user.userId}`);
       if (data && data[0]) {
         setCartCount(data[0].cartItems.length);
       } else {
