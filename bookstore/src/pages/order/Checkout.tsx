@@ -18,7 +18,7 @@ type CheckoutItem = {
 type ItemWithQty = { item: CheckoutItem; quantity: number };
 
 type CheckoutState =
-  | { item: CheckoutItem; quantity: number }
+  | { item: CheckoutItem; quantity: number, typess: string }
   | { items: ItemWithQty[] }
   | (Partial<{ item: CheckoutItem; quantity: number; items: ItemWithQty[] }> & {
       shipId?: "express" | "economy";
@@ -249,17 +249,17 @@ export default function Checkout() {
     const payload = {
       UserId: user.userId,
       shippingAddress: address.detail,
-      receiverName: address.name,
-      receiverPhone: address.phone,
       paymentMethod: payId === "cod" ? "Thanh Toán Khi Nhận Hàng" : "Viettel Money",
       items: items.map((it) => ({
         bookId: Number.parseInt(String(it.item.id), 10),
         quantity: Math.max(1, it.quantity),
       })),
+      typess: state?.typess
     };
 
     try {
       ToastService.loading("Đang tạo đơn hàng...");
+      // console.log("Placing order with payload:", payload);
       const resp = await axiosClient.post("/Order/create", payload);
       const code =
         (resp as any)?.orderCode ||

@@ -158,6 +158,7 @@ const Cart: React.FC = () => {
         // có thể set sẵn các mặc định, optional:
         shipId: "express",
         payId: "cod",
+        typess: "cart",
       },
     });
   };
