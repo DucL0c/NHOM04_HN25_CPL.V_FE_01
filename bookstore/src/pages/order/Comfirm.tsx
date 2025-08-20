@@ -112,19 +112,42 @@ export default function Confirm() {
       <div className="max-w-6xl mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT – thông điệp thành công */}
         <section className="lg:col-span-8 bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-6 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
-              <span className="text-2xl">🎉</span>
-            </div>
-            <div>
-              <div className="text-xl font-semibold">Yay, đặt hàng thành công!</div>
+          {/* Banner: gradient + (tùy chọn) confetti tile */}
+          <div
+            className="relative text-white px-6 py-7 md:py-8"
+            style={{
+              backgroundImage:
+                // nếu có tile confetti thì để 2 lớp, còn không thì chỉ để linear-gradient
+                "linear-gradient(90deg, #08C8F6 0%, #2D60FF 100%), url('/images/confetti-tile.png')",
+              backgroundSize: "cover, 512px 173px",
+              backgroundRepeat: "no-repeat, repeat-x",
+              backgroundPosition: "center, top",
+              minHeight: "112px",
+            }}
+          >
+            {/* Mascot: nửa trên banner, nửa tràn xuống phần trắng */}
+            <img
+              src="/images/iconTiki.png"
+              alt="Tiki Mascot"
+              className="
+                w-24 h-24 md:w-28 md:h-28
+                absolute left-6 -bottom-6
+                select-none pointer-events-none
+                drop-shadow-[0_6px_12px_rgba(0,0,0,0.15)]
+              "
+            />
+
+            {/* Text dịch sang phải để tránh mascot */}
+            <div className="pl-28 md:pl-32">
+              <div className="text-2xl md:text-3xl font-semibold">Yay, đặt hàng thành công!</div>
               <div className="opacity-90">
                 Chuẩn bị tiền mặt <span className="font-semibold">{formatVND(total)}</span>
               </div>
             </div>
           </div>
 
-          <div className="p-6">
+          {/* Nội dung bên dưới: thêm pt-10 để chừa chỗ cho phần mascot tràn xuống */}
+          <div className="p-6 pt-10">
             <div className="border rounded-lg overflow-hidden">
               <div className="grid grid-cols-2 gap-2 p-4 border-b">
                 <div className="text-gray-600">Phương thức thanh toán</div>
@@ -142,13 +165,14 @@ export default function Confirm() {
             <div className="mt-5 flex justify-center">
               <button
                 onClick={() => nav("/")}
-                className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                className="px-5 py-2.5 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium"
               >
                 Quay về trang chủ
               </button>
             </div>
           </div>
         </section>
+
 
         {/* RIGHT – thông tin đơn & DANH SÁCH SẢN PHẨM */}
         <aside className="lg:col-span-4">
@@ -159,7 +183,7 @@ export default function Confirm() {
                 Mã đơn hàng: <span className="font-semibold text-gray-900">{code}</span>
               </div>
               <button
-                onClick={() => nav(`/orders/${code}`, { replace: false })}
+                onClick={() => nav(`/customer/order-detail/${code}`, { replace: false })}
                 className="text-blue-600 text-sm hover:underline"
               >
                 Xem đơn hàng

@@ -69,15 +69,15 @@ type CardPromo = {
 const CARD_PROMOS: CardPromo[] = [
   { id: "shin-plat", title: "Freeship", sub: "Thẻ Shinhan Platinum", bank: "Shinhan Bank", available: true },
   { id: "shin-classic", title: "Freeship", sub: "Thẻ Shinhan Classic", bank: "Shinhan Bank", available: true },
-  { id: "giam30", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: false },
-  { id: "giam50-1", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: false },
-  { id: "giam50-2", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: false },
-  { id: "giam70-1", title: "Giảm 70k", sub: "Đơn từ 500k", bank: "Shinhan Bank", available: false },
-  { id: "giam70-2", title: "Giảm 70k", sub: "Đơn từ 500k", bank: "Shinhan Bank", available: false },
-  { id: "giam100", title: "Giảm 100k", sub: "Đơn từ 700k", bank: "Shinhan Bank", available: false },
-  { id: "giam150", title: "Giảm 150k", sub: "Đơn từ 1 triệu", bank: "Shinhan Bank", available: false },
-  { id: "giam30-tiki", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: false },
-  { id: "giam50-tiki", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: false },
+  { id: "giam30", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: true },
+  { id: "giam50-1", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: true },
+  { id: "giam50-2", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: true },
+  { id: "giam70-1", title: "Giảm 70k", sub: "Đơn từ 500k", bank: "Shinhan Bank", available: true },
+  { id: "giam70-2", title: "Giảm 70k", sub: "Đơn từ 500k", bank: "Shinhan Bank", available: true },
+  { id: "giam100", title: "Giảm 100k", sub: "Đơn từ 700k", bank: "Shinhan Bank", available: true },
+  { id: "giam150", title: "Giảm 150k", sub: "Đơn từ 1 triệu", bank: "Shinhan Bank", available: true },
+  { id: "giam30-tiki", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: true },
+  { id: "giam50-tiki", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: true },
   { id: "freeship-tiki", title: "Freeship", sub: "TikiCARD", bank: "TikiCARD", available: false, special: true },
 ];
 
@@ -418,8 +418,20 @@ export default function Checkout() {
                       checked={payId === p.id}
                       onChange={() => setPayId(p.id)}
                     />
-                    <div className="w-8 h-8 rounded border flex items-center justify-center">
-                      {p.id === "cod" ? "💵" : "📱"}
+                    <div className="w-9 h-9 flex items-center justify-center">
+                      {p.id === "cod" ? (
+                        <img
+                          src="/images/Card.png"
+                          alt="Thanh toán tiền mặt"
+                          className="w-8 h-8 object-contain"
+                        />
+                      ) : (
+                        <img
+                          src="/images/ViettelPay.png"
+                          alt="Viettel Money"
+                          className="w-8 h-8 object-contain"
+                        />
+                      )}
                     </div>
                     <span className="font-medium">{p.name}</span>
                   </label>
@@ -503,42 +515,72 @@ export default function Checkout() {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="font-semibold text-lg">Tiki Khuyến Mãi</div>
-                <div className="text-sm text-gray-600">Có thể chọn 2 🔄</div>
+
+                {/* "Có thể chọn 2" + icon nhỏ cho giống ảnh */}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span>Có thể chọn 2</span>
+                  <button className="w-6 h-6 grid place-items-center rounded border border-gray-200">
+                    ℹ
+                  </button>
+                </div>
               </div>
 
-              <div className="p-4 border rounded-lg bg-green-50 border-green-200">
+              {/* Card 1: Giảm phí vận chuyển (có thể Bỏ chọn / Áp dụng) */}
+              <div
+                className={[
+                  "rounded-xl p-4 border transition",
+                  applyShipDiscount
+                    ? "bg-green-50 border-green-300 ring-1 ring-green-100"
+                    : "bg-white border-gray-200",
+                ].join(" ")}
+              >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
-                      <span className="text-white text-xs">🎫</span>
-                    </div>
+                  {/* Bên trái: icon + text */}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="/images/FreeShip.jpg"
+                      alt="Freeship"
+                      className="w-7 h-7 rounded object-cover"
+                    />
                     <div className="text-sm font-medium">
                       Giảm {formatVND(shipDiscount)} phí vận chuyển
                     </div>
                   </div>
+
+                  {/* Bên phải: nút luôn nằm cùng hàng */}
                   <button
-                    className="text-blue-600 text-sm bg-blue-100 px-3 py-1 rounded"
                     onClick={() => setApplyShipDiscount((v) => !v)}
+                    className={[
+                      "ml-4 text-sm px-3 py-1 rounded border whitespace-nowrap",
+                      applyShipDiscount
+                        ? "text-blue-600 bg-blue-100 border-blue-200"
+                        : "text-blue-600 hover:bg-blue-50 border-blue-200",
+                    ].join(" ")}
                   >
                     {applyShipDiscount ? "Bỏ chọn" : "Áp dụng"}
                   </button>
                 </div>
               </div>
 
-              <div className="p-4 border rounded-lg bg-blue-50 border-blue-200 mt-3">
+              {/* Card 2: Giảm trực tiếp */}
+              <div className="rounded-xl p-4 border bg-blue-50/60 border-blue-200 mt-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                      <span className="text-white text-xs">💳</span>
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="/images/tiki.png"
+                      alt="Tiki"
+                      className="w-7 h-7 object-contain"
+                    />
                     <div className="text-sm font-medium">Giảm trực tiếp</div>
                   </div>
+
                   <div className="text-sm font-semibold text-red-600">
                     -{formatVND(59000)}
                   </div>
                 </div>
               </div>
             </div>
+
 
             {/* Summary & action */}
             <div className="bg-white rounded-lg shadow-sm p-6 space-y-3">

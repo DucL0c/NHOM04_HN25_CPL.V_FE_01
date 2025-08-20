@@ -304,16 +304,18 @@ const BookDetail = () => {
   /** ===== UI ===== */
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="max-w-[1500px] mx-auto p-6">
+      <div className="max-w-[1550px] mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Col 1: Images */}
           <div className="lg:col-span-4 lg:sticky lg:top-[30px] self-start">
             <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-              <img
-                src={book.images[selectedImageIndex]?.large_url || "/placeholder.svg?height=400&width=300"}
-                alt={book.name}
-                className="w-full h-[400px] object-contain rounded-lg bg-white mb-4"
-              />
+              <div className="rounded-lg border border-gray-200 ring-1 ring-gray-100 overflow-hidden mb-4">
+                <img
+                  src={book.images[selectedImageIndex]?.large_url || "/placeholder.svg?height=400&width=300"}
+                  alt={book.name}
+                  className="w-full h-[400px] object-contain bg-white"
+                />
+              </div>
 
               <div className="flex gap-2 mb-4">
                 {book.images.slice(0, 2).map((img, idx) => (
@@ -324,7 +326,11 @@ const BookDetail = () => {
                       selectedImageIndex === idx ? "border-blue-500" : "border-gray-200"
                     }`}
                   >
-                    <img src={img.thumbnail_url || "/placeholder.svg"} alt="" className="w-full h-full object-contain bg-white" />
+                    <img
+                      src={img.thumbnail_url || "/placeholder.svg"}
+                      alt=""
+                      className="w-full h-full object-contain bg-white"
+                    />
                   </button>
                 ))}
               </div>
@@ -336,6 +342,7 @@ const BookDetail = () => {
             </div>
           </div>
 
+
           {/* Col 3: Purchase */}
           <div className="lg:col-span-3 lg:sticky lg:top-[30px] order-2 lg:order-3 self-start">
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
@@ -345,7 +352,7 @@ const BookDetail = () => {
                   <img
                     src="/images/tiki.png"
                     alt="Tiki"
-                    className="h-5 w-auto object-contain mt-[2px]"
+                    className="h-6 w-auto object-contain mt-[2px]"  // tăng từ h-5 → h-6
                   />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-900 leading-none">
@@ -354,7 +361,7 @@ const BookDetail = () => {
                     <img
                       src="/images/logo_official.png"
                       alt="Official"
-                      className="h-4 w-auto object-contain mt-1"
+                      className="h-5 w-auto object-contain mt-1"  // tăng từ h-4 → h-5
                     />
                   </div>
                 </div>
@@ -364,22 +371,26 @@ const BookDetail = () => {
               {/* Quantity */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Số Lượng</label>
-                <div className="flex items-center border rounded w-24">
+
+                <div className="inline-flex rounded-md border border-gray-300 overflow-hidden">
                   <button
                     onClick={() => handleQuantityChange(-1)}
-                    className="px-2 py-1 hover:bg-gray-100 text-sm"
+                    className="w-10 h-10 grid place-items-center hover:bg-gray-50 disabled:opacity-50"
                     disabled={quantity <= 1}
+                    aria-label="Giảm"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-8 text-center py-1 border-0 focus:ring-0 focus:outline-none text-sm"
-                    min="1"
-                  />
-                  <button onClick={() => handleQuantityChange(1)} className="px-2 py-1 hover:bg-gray-100 text-sm">
+
+                  <div className="w-12 h-10 grid place-items-center border-l border-r border-gray-300 select-none">
+                    <span className="text-sm">{quantity}</span>
+                  </div>
+
+                  <button
+                    onClick={() => handleQuantityChange(1)}
+                    className="w-10 h-10 grid place-items-center hover:bg-gray-50"
+                    aria-label="Tăng"
+                  >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
