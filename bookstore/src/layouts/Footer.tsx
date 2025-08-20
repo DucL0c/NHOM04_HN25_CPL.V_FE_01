@@ -7,9 +7,6 @@ export default function Footer() {
       <div className="container px-[15px] mx-auto py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
         {/* Support */}
         <div>
-          <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
-            Hỗ trợ khách hàng
-          </h3>
           <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
             Hỗ trợ khách hàng
           </h3>
@@ -78,9 +75,6 @@ export default function Footer() {
 
         {/* About */}
         <div>
-          <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
-            Về Bookstore
-          </h3>
           <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
             Về Bookstore
           </h3>
@@ -146,9 +140,6 @@ export default function Footer() {
         <div>
           {/* Partnership */}
           <div>
-            <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
-              Hợp tác & liên kết
-            </h3>
             <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
               Hợp tác & liên kết
             </h3>
@@ -167,9 +158,6 @@ export default function Footer() {
           </div>
           {/* Certification */}
           <div>
-            <h3 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
-              Chứng nhận bởi
-            </h3>
             <h3 className="text-base font-semibold leading-6 text-gray-800 mt-6 mb-3">
               Chứng nhận bởi
             </h3>
@@ -195,9 +183,6 @@ export default function Footer() {
 
         {/* Payment */}
         <div>
-          <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
-            Phương thức thanh toán
-          </h3>
           <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
             Phương thức thanh toán
           </h3>
@@ -255,9 +240,6 @@ export default function Footer() {
             />
           </div>
           <div>
-            <h4 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
-              Dịch vụ giao hàng
-            </h4>
             <h4 className="text-base font-semibold leading-6 text-gray-800 mt-6 mb-3">
               Dịch vụ giao hàng
             </h4>
@@ -274,9 +256,6 @@ export default function Footer() {
         {/* Social */}
         <div>
           <div>
-            <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
-              Kết nối với chúng tôi
-            </h3>
             <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
               Kết nối với chúng tôi
             </h3>
@@ -337,9 +316,6 @@ export default function Footer() {
 
       {/* Company info */}
       <div className="container px-[15px] mx-auto pt-4 pb-4 leading-4 text-xs">
-        <h4 className="text-base font-medium leading-6 text-gray-800 mb-3">
-          Công ty TNHH TI KI
-        </h4>
         <p className="mt-1 leading-6 text-gray-500">
           Tòa nhà số 52 đường Út Tịch, Phường 4, Quận Tân Bình, Thành phố Hồ Chí
           Minh
@@ -360,9 +336,6 @@ export default function Footer() {
 
       {/* Brands */}
       <div className="container px-[15px] mx-auto py-6 text-xs">
-        <h4 className="text-base font-medium leading-6 text-gray-800 mb-3">
-          Thương hiệu nổi bật
-        </h4>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {"vascara / dior / estee lauder / barbie / skechers / kindle / wacom / olay / similac / comfort / bitas"
             .split("/")
