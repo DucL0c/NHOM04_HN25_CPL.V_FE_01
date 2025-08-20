@@ -51,7 +51,6 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openLogin]);
 
-
   const handleAccountClick = () => {
     if (!user) {
       setOpenLogin(true);
@@ -266,7 +265,7 @@ const Header = () => {
                         logout();
                         navigate("/");
                         setOpenDropdown(false);
-                        
+
                         // setTimeout(() => window.location.reload(), 0);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
@@ -301,7 +300,7 @@ const Header = () => {
                     className="object-contain"
                   />
                   <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                      {cartCount}
+                    {cartCount}
                   </span>
                 </div>
               </button>
