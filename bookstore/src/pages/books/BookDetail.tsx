@@ -200,6 +200,7 @@ const BookDetail = () => {
           seller: book.current_seller?.name || "Tiki",
         },
         quantity,
+        typess: "buy_now",
       },
     });
   };
