@@ -180,7 +180,6 @@ const BookDetail = () => {
         // Refresh cart count
         refreshCartCount();
       });
-      ToastService.success(`Đã thêm ${quantity} cuốn "${book.name}" vào giỏ hàng`);
     } catch (err) {
       console.error("Add to cart failed:", err);
       ToastService.error("Thêm vào giỏ hàng thất bại");

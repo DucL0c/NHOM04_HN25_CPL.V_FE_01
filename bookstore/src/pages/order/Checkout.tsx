@@ -6,6 +6,7 @@ import { ChevronRight, X } from "lucide-react";
 import axiosClient from "../../services/axiosClient";
 import ToastService from "../../services/notificationService";
 import { useAuth } from "../../hooks/useAuth";
+import { useCartCount } from "../../contexts/CartCountContext";
 
 type CheckoutItem = {
   id: string;
@@ -40,17 +41,32 @@ type UiAddress = {
   detail: string; // địa chỉ giao
 };
 
-const SHIPPING_METHODS = [
+const SHIPPING_METHODS: {
+  id: "express" | "economy";
+  name: string;
+  fee: number;
+  note: string;
+  badge?: string;
+}[] = [
   { id: "express", name: "Giao siêu tốc 2h", fee: 25000, note: "-25K", badge: "NOW" },
   { id: "economy", name: "Giao tiết kiệm", fee: 16000, note: "-16K" },
-] as const;
+];
 
 const PAYMENT_METHODS = [
   { id: "cod", name: "Thanh toán tiền mặt" },
   { id: "viettel", name: "Viettel Money" },
 ] as const;
 
-const CARD_PROMOS = [
+type CardPromo = {
+  id: string;
+  title: string;
+  sub: string;
+  bank: string;
+  available: boolean;
+  special?: boolean;
+};
+
+const CARD_PROMOS: CardPromo[] = [
   { id: "shin-plat", title: "Freeship", sub: "Thẻ Shinhan Platinum", bank: "Shinhan Bank", available: true },
   { id: "shin-classic", title: "Freeship", sub: "Thẻ Shinhan Classic", bank: "Shinhan Bank", available: true },
   { id: "giam30", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: false },
@@ -63,7 +79,7 @@ const CARD_PROMOS = [
   { id: "giam30-tiki", title: "Giảm 30k", sub: "Đơn từ 200k", bank: "Shinhan Bank", available: false },
   { id: "giam50-tiki", title: "Giảm 50k", sub: "Đơn từ 300k", bank: "Shinhan Bank", available: false },
   { id: "freeship-tiki", title: "Freeship", sub: "TikiCARD", bank: "TikiCARD", available: false, special: true },
-] as const;
+];
 
 // ===== helpers =====
 function toNumberVND(p: unknown): number {
@@ -115,6 +131,8 @@ export default function Checkout() {
     (s as any).chosenPromo ?? null
   );
 
+   const { refreshCartCount } = useCartCount();  
+
   // ===== address state =====
   const [apiUser, setApiUser] = useState<ApiUser | null>(null);
   const [address, setAddress] = useState<UiAddress | null>(null);
@@ -133,7 +151,7 @@ export default function Checkout() {
     if (!user?.userId) return;
     (async () => {
       try {
-        const u = await axiosClient.get<ApiUser>(`/Users/getbyid/${user.userId}`);
+        const u = await axiosClient.get<ApiUser, any>(`/Users/getbyid/${user.userId}`);
         setApiUser(u);
         if (u.address) {
           setAddress({
@@ -228,14 +246,12 @@ export default function Checkout() {
       return;
     }
 
-    const paymentMethod = payId === "cod" ? "COD" : "ViettelMoney";
-
     const payload = {
       UserId: user.userId,
-      shippingAddress: address.detail, // địa chỉ giao
-      receiverName: address.name,      // tên người nhận
-      receiverPhone: address.phone,    // SĐT (mới nếu user vừa sửa)
-      paymentMethod,
+      shippingAddress: address.detail,
+      receiverName: address.name,
+      receiverPhone: address.phone,
+      paymentMethod: payId === "cod" ? "Thanh Toán Khi Nhận Hàng" : "Viettel Money",
       items: items.map((it) => ({
         bookId: Number.parseInt(String(it.item.id), 10),
         quantity: Math.max(1, it.quantity),
@@ -249,7 +265,7 @@ export default function Checkout() {
         (resp as any)?.orderCode ||
         (resp as any)?.orderId ||
         Math.floor(100000000 + Math.random() * 900000000).toString();
-
+      refreshCartCount();
       ToastService.updateSuccess("Đặt hàng thành công!");
 
       nav("/confirm", {
@@ -262,12 +278,11 @@ export default function Checkout() {
           total,
           orderCode: String(code),
           etaText: packageETA,
-          address, // để Confirm hiển thị nếu muốn
+          address, 
         },
         replace: true,
       });
     } catch (err: any) {
-      console.error("Create order failed:", err);
       const msg =
         err?.response?.data?.message ||
         err?.message ||

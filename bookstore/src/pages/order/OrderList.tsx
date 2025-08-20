@@ -46,6 +46,14 @@ interface Order {
   orderItems: OrderItem[]
 }
 
+// const ORDERSTATUS = {
+//   "pending": "Chờ xác nhận",
+//   "confirmed": "Đã xác nhận",
+//   "shipping": "Đang giao hàng",
+//   "delivered": "Đã giao hàng",
+//   "cancelled": "Đã huỷ"
+// }
+
 const OrderList = () => {
   const { user } = useAuth();
   const navigate = useNavigate(); 
@@ -56,6 +64,7 @@ const OrderList = () => {
 
   const tabs = [
     "Tất cả đơn",
+    "Chờ xác nhận",
     "Đã xác nhận",
     "Đang giao hàng",
     "Đã giao hàng",
@@ -80,12 +89,11 @@ const OrderList = () => {
 
   const filteredOrders = orders.filter(order => {
     if (activeTab === "Tất cả đơn") return true;
-    if (activeTab === "Đã giao" && order.status === "") return true;
-    if (activeTab === "Đã huỷ" && order.status === "Đã hủy") return true;
-    if (activeTab === "Đang giao hàng" && order.status === "Shipping") return true;
-    if (activeTab === "Đã xác nhận" && order.status === "Processing") return true;
-    if (activeTab === "Chờ xử lý" && order.status === "Pending") return true;
-    
+    if (activeTab === "Chờ xác nhận" && order.status === "pending") return true;
+    if (activeTab === "Đã xác nhận" && order.status === "confirmed") return true;
+    if (activeTab === "Đang giao hàng" && order.status === "shipping") return true;
+    if (activeTab === "Đã giao hàng" && order.status === "delivered") return true;
+    if (activeTab === "Đã huỷ" && order.status === "cancelled") return true;
     return false;
   }).filter(order => {
     if (!searchTerm) return true;
@@ -99,26 +107,21 @@ const OrderList = () => {
     );
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  };
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price);
   };
 
   const getStatusDisplay = (status: string) => {
     switch(status) {
-      case "Delivered": return "Đã giao";
-      case "Cancelled": return "Đã huỷ";
-      case "Pending":return "Chờ xử lý";
-      case "Processing":return "Đang xử lý";
-      case "Shipping":return "Đang vận chuyển";
+      case "pending": return "Chờ xác nhận";
+      case "confirmed": return "Đã xác nhận";
+      case "shipping": return "Đang giao hàng";
+      case "delivered": return "Đã giao hàng";
+      case "cancelled": return "Đã huỷ";
       default: return status;
     }
   };
-    const handleViewDetail = (orderId: number) => {
+  const handleViewDetail = (orderId: number) => {
     navigate(`/customer/order-detail/${orderId}`);
   };
 
@@ -181,8 +184,11 @@ const OrderList = () => {
       <div className="border-b border-[#EBEBF0] pb-3 text-[#808089] text-sm font-medium leading-5">
           <span className="text-sm text-gray-600">Trạng thái:</span>
           <span className={`text-sm font-medium ml-2 ${
-            order.status === "Delivered" ? "text-green-600" :
-            order.status === "Cancelled" ? "text-red-600" : "text-orange-600"
+            order.status === "pending" ? "text-yellow-500" :
+            order.status === "confirmed" ? "text-blue-500" :
+            order.status === "shipping" ? "text-orange-500" :
+            order.status === "delivered" ? "text-green-500" :
+            order.status === "cancelled" ? "text-red-500" : "text-orange-600"
           }`}>
             {getStatusDisplay(order.status)}
           </span>
