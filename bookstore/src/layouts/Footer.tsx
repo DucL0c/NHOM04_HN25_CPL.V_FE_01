@@ -10,6 +10,9 @@ export default function Footer() {
           <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
             Hỗ trợ khách hàng
           </h3>
+          <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
+            Hỗ trợ khách hàng
+          </h3>
           <ul className="space-y-2 text-gray-500 text-sm">
             <li>
               Hotline:{" "}
@@ -78,6 +81,9 @@ export default function Footer() {
           <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
             Về Bookstore
           </h3>
+          <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
+            Về Bookstore
+          </h3>
           <ul className="space-y-2 text-gray-500 text-sm">
             <li>
               <Link className="link link-hover" to="#">
@@ -143,6 +149,9 @@ export default function Footer() {
             <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
               Hợp tác & liên kết
             </h3>
+            <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
+              Hợp tác & liên kết
+            </h3>
             <ul className="space-y-2 text-gray-500">
               <li>
                 <Link className="link link-hover" to="#">
@@ -161,6 +170,26 @@ export default function Footer() {
             <h3 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
               Chứng nhận bởi
             </h3>
+            <h3 className="text-base font-semibold leading-6 text-gray-800 mt-6 mb-3">
+              Chứng nhận bởi
+            </h3>
+            <div className="flex gap-2 items-center">
+              <img
+                src="/Footer/Certification/bo-cong-thuong-2.png"
+                alt="bct2"
+                className="h-8 w-auto"
+              />
+              <img
+                src="https://frontend.tikicdn.com/_desktop-next/static/img/footer/bo-cong-thuong.svg"
+                alt="bct"
+                className="h-8 w-auto"
+              />
+              <img
+                src="/Footer/Certification/dmca_protected_sml_120y.png"
+                alt="dmca"
+                className="h-8 w-auto"
+              />
+            </div>
           </div>
         </div>
 
@@ -169,25 +198,86 @@ export default function Footer() {
           <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
             Phương thức thanh toán
           </h3>
-          <div className="flex flex-wrap gap-2 text-gray-500">
-            {["VISA", "Master", "JCB", "ATM", "MoMo", "ZaloPay", "VNPay"].map(
-              (t) => (
-                <span key={t} className="badge border-base-300">
-                  {t}
-                </span>
-              )
-            )}
+          <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
+            Phương thức thanh toán
+          </h3>
+          {/* Payment images grid */}
+          <div className="grid grid-cols-5 gap-2 mt-3">
+            <img
+              src="/payments/visa.png"
+              alt="visa"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/master.png"
+              alt="master"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/jcb.png"
+              alt="jcb"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/atm.png"
+              alt="atm"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/momo.png"
+              alt="momo"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/zalopay.png"
+              alt="zalopay"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/vnpay.png"
+              alt="vnpay"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/cod.png"
+              alt="cod"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/shopeepay.png"
+              alt="shopeepay"
+              className="h-8 w-8 object-contain"
+            />
+            <img
+              src="/payments/applepay.png"
+              alt="applepay"
+              className="h-8 w-8 object-contain"
+            />
           </div>
-          <h4 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
-            Dịch vụ giao hàng
-          </h4>
-          <div className="badge text-gray-500">FAST</div>
+          <div>
+            <h4 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
+              Dịch vụ giao hàng
+            </h4>
+            <h4 className="text-base font-semibold leading-6 text-gray-800 mt-6 mb-3">
+              Dịch vụ giao hàng
+            </h4>
+            <div className="flex items-center">
+              <img
+                src="/Footer/TIKINOW.png"
+                alt="TikiNow"
+                className="h-8 w-auto"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Social */}
         <div>
           <div>
             <h3 className="text-base font-medium leading-6 text-gray-800 mb-3">
+              Kết nối với chúng tôi
+            </h3>
+            <h3 className="text-base font-semibold leading-6 text-gray-800 mb-3">
               Kết nối với chúng tôi
             </h3>
             <div className="flex items-center gap-3">
@@ -205,16 +295,38 @@ export default function Footer() {
 
           {/* Apps */}
           <div>
-            <h3 className="text-base font-medium leading-6 text-gray-800 mt-6 mb-3">
-              Tải ứng dụng
+            <h3 className="text-base font-semibold leading-6 text-gray-800 mt-6 mb-3">
+              Tải ứng dụng trên điện thoại
             </h3>
-            <div className="grid grid-cols-2 gap-3 items-center">
-              <div className="aspect-square bg-base-300 rounded flex items-center justify-center">
-                QR
-              </div>
-              <div className="space-y-2">
-                <a className="btn btn-sm btn-outline w-full">App Store</a>
-                <a className="btn btn-sm btn-outline w-full">Google Play</a>
+            <div className="flex items-center gap-4">
+              <img
+                src="https://frontend.tikicdn.com/_desktop-next/static/img/footer/qrcode.png"
+                alt="qr-app"
+                className="h-20 w-20 object-contain"
+              />
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://apps.apple.com/vn/app/tiki-shopping-fast-shipping/id958100553"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="https://frontend.tikicdn.com/_desktop-next/static/img/icons/appstore.png"
+                    alt="App Store"
+                    className="h-10 w-auto object-contain"
+                  />
+                </a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=vn.tiki.app.tikiandroid"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="https://frontend.tikicdn.com/_desktop-next/static/img/icons/playstore.png"
+                    alt="Google Play"
+                    className="h-10 w-auto object-contain"
+                  />
+                </a>
               </div>
             </div>
           </div>

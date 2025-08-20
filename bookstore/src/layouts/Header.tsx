@@ -161,7 +161,7 @@ const Header = () => {
               />
               <button
                 data-view-id="main_search_form_button"
-                className="h-full px-4 flex items-center font-medium text-[#1A73E8] border-0 outline-none bg-transparent border-l border-[#E3E3E3] hover:bg-gray-50"
+                className="h-full px-4 flex items-center font-medium text-[#1A73E8] border-0 outline-none bg-transparent border-l border-[#E3E3E3] hover:bg-gray-50 cursor-pointer"
                 style={{ minWidth: 80 }}
                 onClick={handleSearch}
               >
@@ -179,6 +179,7 @@ const Header = () => {
                   pathname === "/" ? "text-blue-600" : "text-gray-500"
                 }`}
                 onClick={() => navigate("/")}
+                type="button"
               >
                 <img
                   src={
@@ -213,6 +214,7 @@ const Header = () => {
                       ? "text-blue-600"
                       : "text-gray-500"
                   }`}
+                  type="button"
                 >
                   <img
                     src={
@@ -238,7 +240,8 @@ const Header = () => {
                         navigate("customer/account");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Thông tin tài khoản
                     </button>
@@ -247,7 +250,8 @@ const Header = () => {
                         navigate("customer/orders");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Đơn hàng của tôi
                     </button>
@@ -256,7 +260,8 @@ const Header = () => {
                         navigate("/support");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Trung tâm hỗ trợ
                     </button>
@@ -265,10 +270,10 @@ const Header = () => {
                         logout();
                         navigate("/");
                         setOpenDropdown(false);
-
                         // setTimeout(() => window.location.reload(), 0);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Đăng xuất
                     </button>
@@ -289,7 +294,8 @@ const Header = () => {
               {/* Cart */}
               <button
                 onClick={() => navigate("/cart")}
-                className="relative flex items-center gap-1 p-0 rounded"
+                className="relative flex items-center gap-1 p-0 rounded cursor-pointer"
+                type="button"
               >
                 <div className="relative w-10 h-10 ml-6 flex items-center justify-center hover:bg-gray-100 hover:text-blue-500 cursor-pointer">
                   <img
