@@ -6,6 +6,7 @@ import DataService from "../services/axiosClient";
 
 export default function AccountLayout() {
   const { user, isAuthenticated } = useAuth();
+
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -38,7 +39,7 @@ export default function AccountLayout() {
   }
 
   return (
-    <div className="relative w-[1270px] left-0 top-0 bottom-[847.49px] bg-[#F5F5FA] mx-auto">
+    <div className="bg-[#F5F5FA] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-3 text-sm text-gray-500">
         <span className="font-inter font-light text-sm leading-[20px] text-[#808089]">
           Trang chủ
@@ -49,13 +50,11 @@ export default function AccountLayout() {
         </span>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          <aside className="relative w-[250px] left-0 top-10 bottom-0">
+          <aside className="lg:w-[250px] w-full">
             <div className="flex items-center pl-[7px] mb-3 ">
-              <div className="w-[45px] mr-3 rounded-full">
-                {/* Image has been added here */}
+              <div className="w-[45px] mr-3 rounded-full flex-shrink-0">
                 <img
                   src="https://salt.tikicdn.com/desktop/img/avatar.png"
                   alt="User Avatar"
@@ -64,17 +63,17 @@ export default function AccountLayout() {
               </div>
               <div className="flex-1 text-[13px] leading-[15px] text-[#333333] font-light">
                 Tài khoản của
-                <div className="text-base leading-snug font-normal block mt-1">
+                <div className="text-base leading-snug font-normal block mt-1 truncate">
                   {user?.name || "User"}
                 </div>
               </div>
             </div>
 
-            <nav className="h-[692.95px] left-0 right-0 top-[57px]">
+            <nav className="grid grid-cols-3 gap-1 lg:flex lg:flex-col lg:h-auto">
               <NavLink
                 to="/customer/account"
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 w-full text-sm p-3 rounded ${
+                  `flex flex-col items-center justify-center space-y-1 text-center lg:flex-row lg:justify-start lg:text-left lg:space-y-0 lg:space-x-3 w-full text-sm p-3 rounded ${
                     isActive
                       ? "bg-gray-100 font-medium text-gray-800"
                       : "text-gray-600 hover:bg-gray-50"
@@ -82,13 +81,14 @@ export default function AccountLayout() {
                 }
               >
                 <User className="w-4 h-4" />
-                <span>Thông tin tài khoản</span>
+
+                <span className="text-xs sm:text-sm">Thông tin tài khoản</span>
               </NavLink>
 
               <NavLink
                 to="/customer/notification"
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 w-full text-sm p-3 rounded ${
+                  `flex flex-col items-center justify-center space-y-1 text-center lg:flex-row lg:justify-start lg:text-left lg:space-y-0 lg:space-x-3 w-full text-sm p-3 rounded ${
                     isActive
                       ? "bg-gray-100 font-medium text-gray-800"
                       : "text-gray-600 hover:bg-gray-50"
@@ -96,13 +96,13 @@ export default function AccountLayout() {
                 }
               >
                 <Bell className="w-4 h-4" />
-                <span>Thông báo của tôi</span>
+                <span className="text-xs sm:text-sm">Thông báo của tôi</span>
               </NavLink>
 
               <NavLink
                 to="/customer/orders"
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 w-full text-sm p-3 rounded ${
+                  `flex flex-col items-center justify-center space-y-1 text-center lg:flex-row lg:justify-start lg:text-left lg:space-y-0 lg:space-x-3 w-full text-sm p-3 rounded ${
                     isActive
                       ? "bg-gray-100 font-medium text-gray-800"
                       : "text-gray-600 hover:bg-gray-50"
@@ -110,13 +110,12 @@ export default function AccountLayout() {
                 }
               >
                 <Package className="w-4 h-4" />
-                <span>Quản lý đơn hàng</span>
+                <span className="text-xs sm:text-sm">Quản lý đơn hàng</span>
               </NavLink>
             </nav>
           </aside>
 
-          {/* Nội dung tab */}
-          <main className="lg:col-span-3">
+          <main className="lg:col-span-3 w-full">
             <Outlet />
           </main>
         </div>

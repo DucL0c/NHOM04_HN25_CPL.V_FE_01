@@ -1,5 +1,3 @@
-
-
 import { useState, useCallback, useRef, useEffect } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 import {
@@ -35,7 +33,8 @@ interface UserData {
 const ViewContainer = ({ title, children }: { title: string, children: React.ReactNode }) => (
     <div className="flex-1">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">{title}</h1>
-        <div className="bg-white rounded-lg shadow-sm p-8 max-w-2xl">
+        {/* Adjusted padding for smaller screens */}
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 max-w-2xl">
             {children}
         </div>
     </div>
@@ -57,48 +56,51 @@ const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: 
     ];
 
     return (
-        <div className="w-[553px] p-4 pr-6 pl-4">
+        // Replaced fixed width with responsive width
+        <div className="w-full lg:w-[553px] p-2 sm:p-4 pr-2 sm:pr-6 pl-2 sm:pl-4">
             <div className="text-xl leading-8 font-light mt-1 mb-3">Thông tin tài khoản</div>
             <div className="space-y-6">
                 <h2 className="text-base leading-6 font-normal text-slate-500">Thông tin cá nhân</h2>
-                <div className="flex flex-row">
-                  <div className="mr-4">
+                {/* Flex direction changes from column on mobile to row on desktop */}
+                <div className="flex flex-col sm:flex-row">
+                  <div className="mr-0 sm:mr-4 mb-4 sm:mb-0 mx-auto">
                     <div className="bg-[#F0F8FF] rounded-full w-28 h-28 border-4 border-[#C2E1FF] relative flex justify-center items-center">
                     <div className="cursor-pointer flex justify-center items-center"><User className="w-10 h-10 text-blue-600" /></div>
                   </div>
 
                 </div>
                 <div className="w-full flex justify-between flex-col">
-                    <div className="flex items-center mb-[34px]">
-                        <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Họ & Tên</label>
+                    {/* Adjusted margins for small screens */}
+                    <div className="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-[34px]">
+                        <label className="w-full sm:w-[110px] min-w-[110px] text-sm text-[#333] mr-0 sm:mr-4 mb-2 sm:mb-0">Họ & Tên</label>
                         <input type="text" name="fullName" value={formData.fullName} onChange={handleFormChange} className="h-9 w-full rounded-md py-2.5 px-3 leading-5 outline-none border border-[#c4c4cf] appearance-textfield outline-offset-[-2px]" />
                     </div>
-                    <div className="flex items-center mb-[34px]">
-                        <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Nickname</label>
+                    <div className="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-[34px]">
+                        <label className="w-full sm:w-[110px] min-w-[110px] text-sm text-[#333] mr-0 sm:mr-4 mb-2 sm:mb-0">Nickname</label>
                         <input type="text" name="nickname" placeholder="Thêm nickname" value={formData.nickname} onChange={handleFormChange} className="h-9 w-full rounded-md py-2.5 px-3 leading-5 outline-none border border-[#c4c4cf] appearance-textfield outline-offset-[-2px]" />
                     </div>
                 </div>
                 </div>
 
-                <div className="flex items-center mb-[34px]">
-                    <label className="w-[110px] min-w-[110px] text-sm text-[#333] mr-4">Ngày sinh</label>
-                    <div className="flex flex-1 relative z-10">
-                        <select name="birthDay" value={formData.birthDay} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
+                <div className="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-[34px]">
+                    <label className="w-full sm:w-[110px] min-w-[110px] text-sm text-[#333] mr-0 sm:mr-4 mb-2 sm:mb-0">Ngày sinh</label>
+                    <div className="flex flex-1 relative z-10 w-full">
+                        <select name="birthDay" value={formData.birthDay} onChange={handleFormChange} className="flex-1 w-full border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
                             <option value="">Ngày</option>
                             {days.map(day => <option key={day} value={day}>{day}</option>)}
                         </select>
-                        <select name="birthMonth" value={formData.birthMonth} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
+                        <select name="birthMonth" value={formData.birthMonth} onChange={handleFormChange} className="flex-1 w-full border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
                             <option value="">Tháng</option>
                             {months.map(month => <option key={month} value={month}>{month}</option>)}
                         </select>
-                        <select name="birthYear" value={formData.birthYear} onChange={handleFormChange} className="w-[100px] border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-3 bg-center shadow-none">
+                        <select name="birthYear" value={formData.birthYear} onChange={handleFormChange} className="flex-1 w-full border border-[#ccc] h-[34px] py-[6px] px-3 leading-[34px] outline-none rounded-md mr-0 sm:mr-3 bg-center shadow-none">
                             <option value="">Năm</option>
                             {years.map(year => <option key={year} value={year}>{year}</option>)}
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label className="flex items-center mb-[34px]">Giới tính</label>
+                    <label className="flex items-center mb-4 sm:mb-[34px]">Giới tính</label>
                     <div className="flex flex-wrap gap-6">
                         <label className="flex items-center"><input type="radio" name="gender" value="male" checked={formData.gender === 'male'} onChange={handleFormChange} className="mr-2" /><span>Nam</span></label>
                         <label className="flex items-center"><input type="radio" name="gender" value="female" checked={formData.gender === 'female'} onChange={handleFormChange} className="mr-2" /><span>Nữ</span></label>
@@ -106,13 +108,13 @@ const PersonalInfoView = ({ formData, handleFormChange, handlePersonalUpdate }: 
                     </div>
                 </div>
                 <div>
-                    <label className="flex items-center mb-[34px]">Quốc tịch</label>
+                    <label className="flex items-center mb-4 sm:mb-[34px]">Quốc tịch</label>
                     <select name="nationality" value={formData.nationality} onChange={handleFormChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                         <option value="">Chọn quốc tịch</option>
                         {nationalities.map(nat => <option key={nat} value={nat}>{nat}</option>)}
                     </select>
                 </div>
-                <button onClick={handlePersonalUpdate} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Lưu thay đổi</button>
+                <button onClick={handlePersonalUpdate} className="bg-blue-600 w-full sm:w-auto text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Lưu thay đổi</button>
             </div>
         </div>
     );
@@ -304,10 +306,10 @@ const UpdatePasswordView = ({ navigateToHome }: { navigateToHome: (message: stri
   };
 
   return (
-      <div className="flex-1 max-w-2xl mx-auto p-6">
+      <div className="flex-1 max-w-2xl mx-auto p-2 sm:p-6">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">Thiết lập mật khẩu</h1>
         
-        <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8">
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -441,8 +443,10 @@ const UpdatePinView = ({ onPinUpdated }: { onPinUpdated: (message: string) => vo
     return (
         <div className="flex-1">
             <h1 className="text-xl font-semibold text-gray-900 mb-6">Cập nhật mã PIN</h1>
-            <div className="bg-white rounded-lg shadow-sm p-8 flex items-center justify-center min-h-[400px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center w-full max-w-3xl">
+            {/* Adjusted padding and minimum height for small screens */}
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
+                {/* Grid layout stacks on mobile, becomes 2-column on medium screens */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center w-full max-w-3xl">
                     <div className="text-center flex flex-col items-center">
                         <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6"><Shield className="w-12 h-12 text-blue-600" /></div>
                         <h2 className="text-2xl font-semibold text-gray-900">{texts[pinStep].title}</h2>
@@ -450,13 +454,14 @@ const UpdatePinView = ({ onPinUpdated }: { onPinUpdated: (message: string) => vo
                     </div>
                     <div className="w-full">
                         <label className="block text-sm font-medium text-gray-700 mb-3">{texts[pinStep].label}</label>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3 justify-center md:justify-start">
                             {pin.map((digit, index) => (
-                                <input key={index} ref={inputRefs[index]} type="password" maxLength={1} value={digit} onChange={(e) => handlePinChange(e, index)} onKeyDown={(e) => handleKeyDown(e, index)} className={`w-14 h-16 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-lg text-center text-3xl font-medium`} />
+                                // Inputs are now responsive
+                                <input key={index} ref={inputRefs[index]} type="password" maxLength={1} value={digit} onChange={(e) => handlePinChange(e, index)} onKeyDown={(e) => handleKeyDown(e, index)} className={`w-12 h-14 sm:w-14 sm:h-16 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-lg text-center text-3xl font-medium`} />
                             ))}
                         </div>
                         <div className="h-6 mt-2">{error && <p className="text-red-500 text-sm">{error}</p>}</div>
-                        {pinStep === 'enter_old' && (<div className="text-left mt-2"><button className="text-blue-600 text-sm hover:underline font-medium">Quên mã PIN?</button></div>)}
+                        {pinStep === 'enter_old' && (<div className="text-center md:text-left mt-2"><button className="text-blue-600 text-sm hover:underline font-medium">Quên mã PIN?</button></div>)}
                     </div>
                 </div>
             </div>
@@ -499,17 +504,14 @@ export default function UserProfile() {
       try {
         setLoading(true);
         
-        // Sử dụng DataService thay vì fetch trực tiếp
         const users = await DataService.get<UserData[],any>('/Users/getall');
         
-        // Tìm user hiện tại dựa trên email từ useAuth
         const currentUser = users.find((userData: UserData) => userData.email === user.email);
         
         if (currentUser) {
           setPhoneNumber(currentUser.phone || "...");
           setEmail(currentUser.email || "...");
           
-          // Parse ngày sinh
           let birthDay = "", birthMonth = "", birthYear = "";
           if (currentUser.birthDay) {
             const birthDate = new Date(currentUser.birthDay);
@@ -520,17 +522,16 @@ export default function UserProfile() {
           
           setFormData({
             fullName: currentUser.name || "",
-            nickname: "", // Có thể thêm field này vào API sau
+            nickname: "", 
             birthDay,
             birthMonth,
             birthYear,
             gender: currentUser.gender || "",
-            nationality: "", // Có thể thêm field này vào API sau
+            nationality: "",
           });
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Có thể hiển thị thông báo lỗi cho user
         showSuccess("Không thể tải thông tin người dùng. Vui lòng thử lại.");
       } finally {
         setLoading(false);
@@ -555,7 +556,6 @@ export default function UserProfile() {
 
 const handlePhoneUpdate = useCallback(async (newPhoneNumber: string) => {
   try {
-    // Calling the API to update phone number
     await DataService.put(`/Users/${user?.userId}`, {
       ...user,
       phone: newPhoneNumber
@@ -571,7 +571,6 @@ const handlePhoneUpdate = useCallback(async (newPhoneNumber: string) => {
 
 const handleEmailUpdate = useCallback(async (newEmail: string) => {
   try {
-    // Calling the API to update email
     await DataService.put(`/Users/${user?.userId}`, {
       ...user,
       email: newEmail
@@ -628,7 +627,6 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
     );
   }
 
-  // Not authenticated state
   if (!isAuthenticated) {
     return (
       <main className="flex-grow max-w-7xl mx-auto px-4 py-6 w-full">
@@ -672,29 +670,30 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
   };
 
   const RightSidebar = () => (
-    <div className="w-[calc(100%-553px)] p-4 pl-6 flex flex-col">
+    // Replaced fixed width with responsive width and added margin top for mobile
+    <div className="w-full lg:w-[calc(100%-553px)] p-2 sm:p-4 lg:pl-6 flex flex-col space-y-4 mt-6 lg:mt-0">
         <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="font-medium text-gray-900 mb-4">Số điện thoại và Email</h3>
             <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-gray-500 mt-1" />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                        <Phone className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
                         <div>
                             <span className="text-sm text-gray-600">Số điện thoại</span>
-                            <p className="text-sm text-gray-900">{phoneNumber}</p>
+                            <p className="text-sm text-gray-900 truncate">{phoneNumber}</p>
                         </div>
                     </div>
-                    <button onClick={() => setCurrentView('update_phone')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                    <button onClick={() => setCurrentView('update_phone')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50 w-full sm:w-auto">Cập nhật</button>
                 </div>
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-500 mt-1" />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                        <Mail className="w-4 h-4 text-gray-500 mt-1 flex-shrink-0" />
                         <div>
                             <span className="text-sm text-gray-600">Địa chỉ email</span>
-                            <p className="text-sm text-gray-900">{email}</p>
+                            <p className="text-sm text-gray-900 break-all">{email}</p>
                         </div>
                     </div>
-                    <button onClick={() => setCurrentView('update_email')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                    <button onClick={() => setCurrentView('update_email')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50 w-full sm:w-auto">Cập nhật</button>
                 </div>
             </div>
         </div>
@@ -706,14 +705,14 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
                       <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/lock.png" alt="Lock icon" className="w-4 h-4" />
                       <span className="text-sm text-gray-600">Thiết lập mật khẩu</span>
                     </div>
-                    <button onClick={() => setCurrentView('update_password')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                    <button onClick={() => setCurrentView('update_password')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50 flex-shrink-0">Cập nhật</button>
                 </div>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <img src="https://salt.tikicdn.com/ts/upload/99/50/d7/cc0504daa05199e1fb99cd9a89e60fa5.jpg" alt="PIN icon" className="w-4 h-4" />
                       <span className="text-sm text-gray-600">Cập nhật mã PIN</span>
                     </div>
-                    <button onClick={() => setCurrentView('update_pin')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Cập nhật</button>
+                    <button onClick={() => setCurrentView('update_pin')} className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50 flex-shrink-0">Cập nhật</button>
                 </div>
             </div>
         </div>
@@ -725,14 +724,14 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
                       <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/facebook.png" alt="Facebook icon" className="w-4 h-4" />
                       <span className="text-sm text-gray-600">Facebook</span>
                     </div>
-                    <button className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50">Liên kết</button>
+                    <button className="text-blue-600 text-sm border border-blue-600 rounded px-4 py-1 hover:bg-blue-50 flex-shrink-0">Liên kết</button>
                 </div>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/google.png" alt="Google icon" className="w-4 h-4" />
                       <span className="text-sm text-gray-600">Google</span>
                     </div>
-                    <span className="text-gray-500 text-sm border border-gray-300 rounded px-4 py-1">Đã liên kết</span>
+                    <span className="text-gray-500 text-sm border border-gray-300 rounded px-4 py-1 flex-shrink-0">Đã liên kết</span>
                 </div>
             </div>
         </div>
@@ -740,43 +739,18 @@ const handleEmailUpdate = useCallback(async (newEmail: string) => {
   );
   
   return (
-    <main className="flex-grow max-w-7xl mx-auto px-4 py-6 w-full">
+    <main className="flex-grow max-w-7xl mx-auto px-2 sm:px-4 py-6 w-full">
       {showSuccessNotification && (
         <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in">
           <CheckCircle className="w-5 h-5" />
           <span>{successMessage}</span>
         </div>
       )}
-      
-      <div className="flex flex-nowrap justify-between bg-white rounded-lg">
-        <div className="lg:col-span-1">
-            {/* <div className="bg-white rounded-lg p-4">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-gray-600" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Tài khoản của</div>
-                  <div className="font-semibold text-gray-800">{formData.fullName || user?.name || "Người dùng"}</div>
-                </div>
-              </div>
 
-              <nav className="space-y-1">
-                <div className="flex items-center space-x-3 text-sm font-medium text-gray-800 p-3 bg-gray-100 rounded">
-                  <User className="w-4 h-4" />
-                  <span>Thông tin tài khoản</span>
-                </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-600 p-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <Bell className="w-4 h-4" />
-                  <span>Thông báo của tôi</span>
-                </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-600 p-3 hover:bg-gray-50 rounded cursor-pointer">
-                  <Package className="w-4 h-4" />
-                  <span>Quản lý đơn hàng</span>
-                </div>
-              </nav>
-            </div> */}
-          </div>
+      <div className="flex flex-wrap lg:flex-nowrap justify-between bg-white rounded-lg">
+        <div className="hidden lg:block lg:col-span-1">
+
+        </div>
         
         {renderView()}
 
