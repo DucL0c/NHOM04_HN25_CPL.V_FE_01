@@ -116,14 +116,7 @@ const Header = () => {
         />
       </div>
 
-      <div
-        className="container flex items-start gap-x-12"
-        style={{
-          width: 1440,
-          margin: "0px 220px",
-          padding: "8px 24px",
-        }}
-      >
+      <div className="container max-w-[1440px] mx-auto px-2 sm:px-4 md:px-6 lg:px-[24px] xl:mx-[100px] 2xl:mx-[220px] py-2 flex items-start gap-x-4 md:gap-x-8 lg:gap-x-12">
         {/* Logo */}
         <div className="flex items-center h-full">
           <a
@@ -325,16 +318,16 @@ const Header = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="flex flex-wrap gap-x-3 gap-y-3 text-gray-500">
-            <span>Điện gia dụng</span>
-            <span>Xe cộ</span>
-            <span>Mẹ & bé</span>
-            <span>Khỏe đẹp</span>
-            <span>Nhà cửa</span>
-            <span>Sách</span>
-            <span>Thể thao</span>
-            <span>Muôn kiếp nhân sinh</span>
-            <span>MBA bằng hình</span>
+          <div className="flex flex-wrap gap-x-3 gap-y-2 text-gray-500 text-sm md:text-base">
+            <span className="whitespace-nowrap">Điện gia dụng</span>
+            <span className="whitespace-nowrap">Xe cộ</span>
+            <span className="whitespace-nowrap">Mẹ & bé</span>
+            <span className="whitespace-nowrap">Khỏe đẹp</span>
+            <span className="whitespace-nowrap">Nhà cửa</span>
+            <span className="whitespace-nowrap">Sách</span>
+            <span className="whitespace-nowrap">Thể thao</span>
+            <span className="whitespace-nowrap">Muôn kiếp nhân sinh</span>
+            <span className="whitespace-nowrap">MBA bằng hình</span>
           </div>
         </div>
       </div>
@@ -342,7 +335,14 @@ const Header = () => {
       {/* Sub Banner */}
       {pathname === "/" && (
         <div className="hidden md:block w-full border-t border-gray-200">
-          <div className="w-full max-w-[1440px] mx-auto px-4">
+          <div
+            className="
+        w-full max-w-[1440px] 
+        mx-auto 
+        px-2 sm:px-4 md:px-6 lg:px-[24px] 
+        xl:mx-[100px] 2xl:mx-[220px]
+      "
+          >
             <div className="flex items-center py-2 text-gray-700 text-sm font-medium gap-2">
               <span className="px-2 py-1 font-semibold text-blue-900 whitespace-nowrap mr-2 shrink-0">
                 Cam kết
