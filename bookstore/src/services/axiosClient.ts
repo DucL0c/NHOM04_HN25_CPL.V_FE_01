@@ -2,7 +2,7 @@ import axios from "axios";
 import { authStore } from "../auth/auth.store";
 
 const axiosClient = axios.create({
-  baseURL: "https://bkstoreapi.kiennt.dev/api",
+  baseURL: "https://bookstoreapi.kiennt.dev/api",
   headers: {
     "Content-Type": "application/json",
   },
