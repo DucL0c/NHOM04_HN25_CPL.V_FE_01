@@ -51,7 +51,6 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openLogin]);
 
-
   const handleAccountClick = () => {
     if (!user) {
       setOpenLogin(true);
@@ -143,27 +142,28 @@ const Header = () => {
         <div className="flex-1 flex flex-col gap-x-2 gap-y-2 text-[14px]">
           <div className="flex items-center justify-between h-[40px] relative z-2">
             {/* Searchbar */}
-            <div className="flex items-center bg-white border border-gray-200 rounded overflow-hidden h-10 font-inter text-[14px] leading-[16.1px] flex-grow box-border">
-              <img
-                className="icon-search ml-3 mr-2 w-5 h-5"
-                src="/Header/IconSearch.png"
-                alt="icon-search"
-                width={20}
-                height={20}
-              />
+            <div className="flex items-center bg-white border border-gray-300 rounded-[10px] overflow-hidden h-10 font-inter text-[14px] leading-[16.1px] flex-grow box-border relative shadow-sm">
+              <span className="pl-3 flex items-center">
+                <img
+                  className="w-5 h-5 opacity-60"
+                  src="/Header/IconSearch.png"
+                  alt="icon-search"
+                  width={20}
+                  height={20}
+                />
+              </span>
               <input
                 data-view-id="main_search_form_input"
                 type="text"
-                placeholder="Freeship đơn từ 45k"
-                className="flex-1 py-2 bg-transparent outline-none"
+                placeholder="Túi rác Inochi 79k/8 cuộn"
+                className="flex-1 px-2 bg-transparent outline-none placeholder:text-gray-400 text-gray-900"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleInputKeyDown}
               />
               <button
                 data-view-id="main_search_form_button"
-                className="h-full px-4 flex items-center font-medium text-[#1A73E8] border-0 outline-none bg-transparent border-l border-[#E3E3E3] hover:bg-gray-50"
-                style={{ minWidth: 80 }}
+                className="h-[70%] px-4 flex items-center font-medium text-[#1A73E8] border-0 outline-none bg-transparent border-l border-gray-300 hover:bg-blue-50 transition-colors duration-150 cursor-pointer text-sm"
                 onClick={handleSearch}
               >
                 Tìm kiếm
@@ -180,6 +180,7 @@ const Header = () => {
                   pathname === "/" ? "text-blue-600" : "text-gray-500"
                 }`}
                 onClick={() => navigate("/")}
+                type="button"
               >
                 <img
                   src={
@@ -214,6 +215,7 @@ const Header = () => {
                       ? "text-blue-600"
                       : "text-gray-500"
                   }`}
+                  type="button"
                 >
                   <img
                     src={
@@ -239,7 +241,8 @@ const Header = () => {
                         navigate("customer/account");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Thông tin tài khoản
                     </button>
@@ -248,7 +251,8 @@ const Header = () => {
                         navigate("customer/orders");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Đơn hàng của tôi
                     </button>
@@ -257,7 +261,8 @@ const Header = () => {
                         navigate("/support");
                         setOpenDropdown(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Trung tâm hỗ trợ
                     </button>
@@ -266,10 +271,10 @@ const Header = () => {
                         logout();
                         navigate("/");
                         setOpenDropdown(false);
-                        
                         // setTimeout(() => window.location.reload(), 0);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 cursor-pointer"
+                      type="button"
                     >
                       Đăng xuất
                     </button>
@@ -290,9 +295,11 @@ const Header = () => {
               {/* Cart */}
               <button
                 onClick={() => navigate("/cart")}
-                className="relative flex items-center gap-1 p-0 rounded"
+                className="relative flex items-center gap-1 p-0 rounded cursor-pointer"
+                type="button"
               >
-                <div className="relative w-10 h-10 ml-6 flex items-center justify-center hover:bg-gray-100 hover:text-blue-500 cursor-pointer">
+                <div className="h-6 border-l border-gray-300"></div>
+                <div className="w-10 h-[80%] flex items-center justify-center hover:bg-gray-100 hover:text-blue-500 cursor-pointer">
                   <img
                     src="/Header/Wrapper/Cart.png"
                     alt="cart"
@@ -301,7 +308,7 @@ const Header = () => {
                     className="object-contain"
                   />
                   <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                      {cartCount}
+                    {cartCount}
                   </span>
                 </div>
               </button>
@@ -322,19 +329,58 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/*Sub Banner*/}
       {pathname === "/" && (
         <div className="w-full flex items-center py-2 box-border border-t border-gray-200">
           <div
-            className="container flex items-center bg-transparent text-blue-600 cursor-pointer text-sm leading-4 no-underline decoration-blue-600"
+            className="container max-w-[1440px] flex items-center rounded-lg px-2 py-1 text-gray-700 text-sm font-medium overflow-x-auto"
             style={{
               width: 1440,
               margin: "0px 220px",
               padding: "0px 24px",
             }}
           >
-            <span className=" block box-border text-sm font-semibold text-blue-900 whitespace-nowrap leading-5">
-              Cam Kết
+            <span className="px-2 py-1 font-semibold text-blue-900 whitespace-nowrap mr-2">
+              Cam kết
             </span>
+            <span className="h-4 w-px bg-gray-200 mx-1" />
+            {[
+              { icon: "/Header/Subheading/icon-0.png", text: "100% hàng thật" },
+              {
+                icon: "/Header/Subheading/icon-1.png",
+                text: "Freeship mọi đơn",
+              },
+              {
+                icon: "/Header/Subheading/icon-2.png",
+                text: "Hoàn 200% nếu hàng giả",
+              },
+              {
+                icon: "/Header/Subheading/icon-3.png",
+                text: "30 ngày đổi trả",
+              },
+              { icon: "/Header/Subheading/icon-4.png", text: "Giao nhanh 2h" },
+              { icon: "/Header/Subheading/icon-5.png", text: "Giá siêu rẻ" },
+            ].map((item, idx, arr) => (
+              <>
+                <div
+                  key={item.text}
+                  className="flex items-center gap-1 px-2 py-1 whitespace-nowrap"
+                >
+                  {item.icon && (
+                    <img
+                      src={item.icon}
+                      alt="icon"
+                      className="w-4 h-4 object-contain"
+                    />
+                  )}
+                  <span>{item.text}</span>
+                </div>
+                {idx !== arr.length - 1 && (
+                  <span className="h-4 w-px bg-gray-200 mx-1" />
+                )}
+              </>
+            ))}
           </div>
         </div>
       )}
