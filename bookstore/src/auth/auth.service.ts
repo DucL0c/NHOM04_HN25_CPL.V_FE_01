@@ -4,7 +4,7 @@ import { authStore } from './auth.store';
 
 export const AuthService = {
   async login(payload: LoginPayload): Promise<AuthUser> {
-    const { data } = await http.post<LoginResponse>('/Auth/login', payload);
+    const { data } = await http.post<LoginResponse>('https://bookstoreapi.kiennt.dev/api/Auth/login', payload);
     const user: AuthUser = {
       userId: data.user.userId,
       name: data.user.name,
@@ -18,7 +18,7 @@ export const AuthService = {
 
   async logout(): Promise<void> {
     try {
-      await http.post('/Auth/logout'); 
+      await http.post('https://bookstoreapi.kiennt.dev/api/Auth/logout'); 
     } catch (_) {
     } finally {
       authStore.getState().clearAuth();
@@ -26,7 +26,7 @@ export const AuthService = {
   },
 
   async refreshToken(): Promise<string | null> {
-    const { data } = await http.post<{ accessToken: string, refreshToken: string }>('/Auth/refresh');
+    const { data } = await http.post<{ accessToken: string, refreshToken: string }>('https://bookstoreapi.kiennt.dev/api/Auth/refresh');
     const state = authStore.getState();
     if (data?.accessToken && state.user) {
       state.setAuth(state.user, data.accessToken, data.refreshToken);
