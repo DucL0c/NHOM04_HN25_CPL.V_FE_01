@@ -96,25 +96,27 @@ const Header = () => {
 
   return (
     <header className="w-full bg-white shadow leading-4">
-      <div className="flex items-center justify-center relative cursor-pointer bg-[#EFFFF4] text-sm px-4 py-3 gap-1">
-        <div className="align-middle text-[#00AB56] font-semibold leading-4">
+      <div
+        className="flex flex-col sm:flex-row items-center justify-center
+         gap-2 sm:gap-3
+         px-3 py-2 sm:px-4 sm:py-3
+         bg-[#EFFFF4] text-xs sm:text-sm"
+      >
+        <div className="text-center sm:text-left text-[#00AB56] font-semibold leading-4">
           Freeship đơn từ 45k, giảm nhiều hơn cùng
         </div>
+
+        {/* ảnh tự co theo chiều cao, giữ tỉ lệ */}
         <img
           src="/Header/FreeShipImg.png"
           alt="Freeship"
-          width={79}
-          height={16}
+          className="h-4 sm:h-5 w-auto object-contain"
+          loading="lazy"
+          decoding="async"
         />
       </div>
-      <div
-        className="container flex items-start gap-x-12"
-        style={{
-          width: 1440,
-          margin: "0px 220px",
-          padding: "8px 24px",
-        }}
-      >
+
+      <div className="container max-w-[1440px] mx-auto px-2 sm:px-4 md:px-6 lg:px-[24px] xl:mx-[100px] 2xl:mx-[220px] py-2 flex items-start gap-x-4 md:gap-x-8 lg:gap-x-12">
         {/* Logo */}
         <div className="flex items-center h-full">
           <a
@@ -316,71 +318,81 @@ const Header = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="flex flex-wrap gap-x-3 gap-y-3 text-gray-500">
-            <span>Điện gia dụng</span>
-            <span>Xe cộ</span>
-            <span>Mẹ & bé</span>
-            <span>Khỏe đẹp</span>
-            <span>Nhà cửa</span>
-            <span>Sách</span>
-            <span>Thể thao</span>
-            <span>Muôn kiếp nhân sinh</span>
-            <span>MBA bằng hình</span>
+          <div className="flex flex-wrap gap-x-3 gap-y-2 text-gray-500 text-sm md:text-base">
+            <span className="whitespace-nowrap">Điện gia dụng</span>
+            <span className="whitespace-nowrap">Xe cộ</span>
+            <span className="whitespace-nowrap">Mẹ & bé</span>
+            <span className="whitespace-nowrap">Khỏe đẹp</span>
+            <span className="whitespace-nowrap">Nhà cửa</span>
+            <span className="whitespace-nowrap">Sách</span>
+            <span className="whitespace-nowrap">Thể thao</span>
+            <span className="whitespace-nowrap">Muôn kiếp nhân sinh</span>
+            <span className="whitespace-nowrap">MBA bằng hình</span>
           </div>
         </div>
       </div>
 
-      {/*Sub Banner*/}
+      {/* Sub Banner */}
       {pathname === "/" && (
-        <div className="w-full flex items-center py-2 box-border border-t border-gray-200">
+        <div className="hidden md:block w-full border-t border-gray-200">
           <div
-            className="container max-w-[1440px] flex items-center rounded-lg px-2 py-1 text-gray-700 text-sm font-medium overflow-x-auto"
-            style={{
-              width: 1440,
-              margin: "0px 220px",
-              padding: "0px 24px",
-            }}
+            className="
+        w-full max-w-[1440px] 
+        mx-auto 
+        px-2 sm:px-4 md:px-6 lg:px-[24px] 
+        xl:mx-[100px] 2xl:mx-[220px]
+      "
           >
-            <span className="px-2 py-1 font-semibold text-blue-900 whitespace-nowrap mr-2">
-              Cam kết
-            </span>
-            <span className="h-4 w-px bg-gray-200 mx-1" />
-            {[
-              { icon: "/Header/Subheading/icon-0.png", text: "100% hàng thật" },
-              {
-                icon: "/Header/Subheading/icon-1.png",
-                text: "Freeship mọi đơn",
-              },
-              {
-                icon: "/Header/Subheading/icon-2.png",
-                text: "Hoàn 200% nếu hàng giả",
-              },
-              {
-                icon: "/Header/Subheading/icon-3.png",
-                text: "30 ngày đổi trả",
-              },
-              { icon: "/Header/Subheading/icon-4.png", text: "Giao nhanh 2h" },
-              { icon: "/Header/Subheading/icon-5.png", text: "Giá siêu rẻ" },
-            ].map((item, idx, arr) => (
-              <>
-                <div
-                  key={item.text}
-                  className="flex items-center gap-1 px-2 py-1 whitespace-nowrap"
-                >
-                  {item.icon && (
-                    <img
-                      src={item.icon}
-                      alt="icon"
-                      className="w-4 h-4 object-contain"
-                    />
+            <div className="flex items-center py-2 text-gray-700 text-sm font-medium gap-2">
+              <span className="px-2 py-1 font-semibold text-blue-900 whitespace-nowrap mr-2 shrink-0">
+                Cam kết
+              </span>
+
+              <span className="h-4 w-px bg-gray-200 mx-1 shrink-0" />
+
+              {[
+                {
+                  icon: "/Header/Subheading/icon-0.png",
+                  text: "100% hàng thật",
+                },
+                {
+                  icon: "/Header/Subheading/icon-1.png",
+                  text: "Freeship mọi đơn",
+                },
+                {
+                  icon: "/Header/Subheading/icon-2.png",
+                  text: "Hoàn 200% nếu hàng giả",
+                },
+                {
+                  icon: "/Header/Subheading/icon-3.png",
+                  text: "30 ngày đổi trả",
+                },
+                {
+                  icon: "/Header/Subheading/icon-4.png",
+                  text: "Giao nhanh 2h",
+                },
+                { icon: "/Header/Subheading/icon-5.png", text: "Giá siêu rẻ" },
+              ].map((item, idx, arr) => (
+                <div key={item.text} className="flex items-center">
+                  <div className="flex items-center gap-1 px-2 py-1 whitespace-nowrap shrink-0">
+                    {item.icon && (
+                      <img
+                        src={item.icon}
+                        alt="icon"
+                        className="w-4 h-4 object-contain"
+                        loading="lazy"
+                      />
+                    )}
+                    <span>{item.text}</span>
+                  </div>
+
+                  {/* Separator */}
+                  {idx !== arr.length - 1 && (
+                    <span className="h-4 w-px bg-gray-200 mx-1 shrink-0" />
                   )}
-                  <span>{item.text}</span>
                 </div>
-                {idx !== arr.length - 1 && (
-                  <span className="h-4 w-px bg-gray-200 mx-1" />
-                )}
-              </>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
