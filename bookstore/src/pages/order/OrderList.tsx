@@ -61,7 +61,6 @@ const OrderList = () => {
     "Đang giao hàng",
     "Đã giao hàng",
     "Đã huỷ",
-    "Chờ xử lý"
   ];
 
   useEffect(() => {
