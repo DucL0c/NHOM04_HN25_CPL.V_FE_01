@@ -3,7 +3,10 @@ import BookList from "../../components/book/BookList";
 import ProductCategories from "../../components/book/ProductCategories";
 import Banner from "../../components/banner/Banner";
 import BookFilterSort from "../../components/book/BookFilterSort";
-import type { BookListFilter, BookListSort } from "../../components/book/BookList";
+import type {
+  BookListFilter,
+  BookListSort,
+} from "../../components/book/BookList";
 import BestSellingProducts from "../../components/book/BestSellingProducts";
 // import axiosClient from "../../services/axiosClient";
 // import type { BEBook } from "../../services/bookService";
@@ -14,27 +17,27 @@ const Home: FC = () => {
 
   return (
     <div className="container mx-auto px-8 py-4">
-      {/* <h1 className="text-3xl font-bold text-gray-800">Chào mừng đến với Bookstore!</h1>
-            <p className="mt-2 mb-2 text-gray-600">Tìm kiếm và mua sách yêu thích của bạn ngay hôm nay.</p> */}
-      <main className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-        {/* Sidebar */}
-        <aside className="lg:col-span-3">
+      <main className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Sidebar - chỉ hiện trên lg */}
+        <aside className="hidden lg:block lg:col-span-3">
           <ProductCategories />
         </aside>
+
         {/* Main content */}
         <div className="lg:col-span-9 space-y-4">
-          <div className="bg-white rounded-lg shadow p-4">
+          {/* Chỉ hiện trên desktop */}
+          <div className="hidden lg:block bg-white rounded-lg shadow p-4">
             <h2 className="text-black font-semibold text-3xl">Nhà Sách Tiki</h2>
           </div>
-          {/* Banner */}
-          <div className="h-52">
+
+          {/* Banner - chỉ desktop */}
+          <div className="hidden lg:block h-52">
             <Banner />
           </div>
-          {/* Danh mục nhỏ */}
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-bold mb-3">
-              Khám phá theo danh mục
-            </h3>
+
+          {/* Danh mục nhỏ - chỉ desktop */}
+          <div className="hidden lg:block bg-white rounded-lg shadow p-4">
+            <h3 className="text-lg font-bold mb-3">Khám phá theo danh mục</h3>
             <div className="flex flex-wrap gap-20 p-3">
               <div className="flex flex-col items-center text-center">
                 <img
@@ -70,12 +73,22 @@ const Home: FC = () => {
               </div>
             </div>
           </div>
-          <BookFilterSort onChange={(f, s) => { setFilter(f); setSort(s); }} />
-          {/* BookList component will be rendered here */}
+
+          {/* Luôn hiện ở cả mobile và desktop */}
+          <BookFilterSort
+            onChange={(f, s) => {
+              setFilter(f);
+              setSort(s);
+            }}
+          />
           <BookList filter={filter} sortBy={sort} />
         </div>
       </main>
-      <BestSellingProducts />
+
+      {/* BestSellingProducts - chỉ desktop */}
+      <div className="hidden lg:block">
+        <BestSellingProducts />
+      </div>
     </div>
   );
 };
