@@ -2,7 +2,7 @@ import axios from "axios";
 import { authStore } from "../auth/auth.store";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.API_BASE_URL || "https://localhost:7061/api/",
+  baseURL: "https://bkstoreapi.kiennt.dev/api",
   headers: {
     "Content-Type": "application/json",
   },
