@@ -5,10 +5,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import ToastService from "../../services/notificationService";
 
 interface UserDto {
-  userId: number;
-  name: string;
-  phone: string;
-  address: string;
+  userId: number
+  name: string
+  phone: string | null
+  address: string | null
 }
 
 interface BookImages {
